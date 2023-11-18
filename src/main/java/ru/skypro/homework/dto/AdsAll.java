@@ -2,7 +2,7 @@ package ru.skypro.homework.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DTO предоставления всех объявлений
@@ -10,5 +10,5 @@ import java.util.ArrayList;
 @Data
 public class AdsAll {
     private int count;
-    private ArrayList<AdDto> result;
+    private List<AdDto> result;
 }
