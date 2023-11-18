@@ -10,5 +10,5 @@ public class CreateOrUpdateComment {
     /**
      * текст комментария
      */
-    String text;
+    private String text;
 }

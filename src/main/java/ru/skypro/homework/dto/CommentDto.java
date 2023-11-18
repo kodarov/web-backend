@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class CommentDto {
-    int author;                 //id автора комментария
-    String authorImage;         //ссылка на аватар автора комментария
-    String authorFirstName;     //имя создателя комментария
-    long createdAt;             //дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
-    int pk;                     //id комментария
-    String text;                //текст комментария
+    private int author;                 //id автора комментария
+    private String authorImage;         //ссылка на аватар автора комментария
+    private String authorFirstName;     //имя создателя комментария
+    private long createdAt;             //дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
+    private int pk;                     //id комментария
+    private String text;                //текст комментария
 }

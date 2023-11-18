@@ -4,13 +4,13 @@ import lombok.Data;
 
 @Data
 public class AdInfo {
-    int pk; // id объявления
-    String authorFirstName;
-    String authorLastName;
-    String description;
-    String email;
-    String image;
-    String phone;
-    int price;
-    String title;
+    private int pk; // id объявления
+    private String authorFirstName;
+    private String authorLastName;
+    private String description;
+    private String email;
+    private String image;
+    private String phone;
+    private int price;
+    private String title;
 }

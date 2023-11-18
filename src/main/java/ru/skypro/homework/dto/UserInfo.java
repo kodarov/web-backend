@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class UserInfo {
-    int id;
-    String email;
-    String firstName;
-    String lastName;
-    String phone;
-    Role role;  //user или admin
-    String image; //ссылка на аватар пользователя
+    private int id;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private Role role;  //user или admin
+    private String image; //ссылка на аватар пользователя
 }

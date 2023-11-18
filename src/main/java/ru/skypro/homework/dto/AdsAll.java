@@ -9,6 +9,6 @@ import java.util.ArrayList;
  */
 @Data
 public class AdsAll {
-    int count;
-    ArrayList<AdDto> result;
+    private int count;
+    private ArrayList<AdDto> result;
 }
