@@ -3,16 +3,13 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 import ru.skypro.homework.dto.Role;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Сущность юзера
  * @User
  */
-@Entity(name = "Users")
+@Entity(name = "users")
 @Data
 public class User {
     @Id
@@ -23,6 +20,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String phone;
+    @Enumerated(EnumType.STRING)
     private Role role;
-    private String avatarImage;
+    @Column(columnDefinition = "bytea")
+    private byte[] image;
 }

@@ -8,17 +8,17 @@ import javax.persistence.*;
  * Сущность объявления
  * @Ad
  */
-@Entity
+@Entity(name = "ads")
 @Data
 public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private static int count;
     private String image;
     private int price;
     private String title;
     private String description;
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
