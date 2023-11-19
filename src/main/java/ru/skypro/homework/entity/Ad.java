@@ -2,22 +2,23 @@ package ru.skypro.homework.entity;
 
 import lombok.Data;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
- * Entity
- *
- * @Ad Advertisement
+ * Сущность объявления
+ * @Ad
  */
-//@Entity
+@Entity
 @Data
 public class Ad {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private static int count;
-    private int author;
     private String image;
     private int price;
     private String title;
     private String description;
+    @ManyToOne
+    private User user;
 }
