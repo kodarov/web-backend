@@ -19,9 +19,8 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
+    private String avatarUri;
     private String phone;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @Column(columnDefinition = "bytea")
-    private byte[] image;
 }

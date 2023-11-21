@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
+import ru.skypro.homework.entity.AdImage;
+import ru.skypro.homework.entity.Avatar;
 
 import java.io.IOException;
 
@@ -55,8 +58,19 @@ public class UsersController {
      * @return
      */
     @PostMapping("/set_password")
-    public NewPassword setPassword(@RequestBody NewPassword pass) {
+    public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
         log.info("Изменение пароля");
-        return new NewPassword();
+        return ResponseEntity.ok().build();
     }
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer idAd){
+        //пока без бизнес-логики
+        Avatar avatar = new Avatar();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
+        headers.setContentLength(avatar.getData().length);
+        return ResponseEntity.ok().headers(headers).body(avatar.getData());
+    }
+
 }
