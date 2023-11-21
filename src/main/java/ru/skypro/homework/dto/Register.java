@@ -6,8 +6,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
-public class Register {//Как избегать дублирования кода из Login и UserUpdate?
-    // Композиция будет противоречить спецификации фронта, на выходе JSON будет другим.
+public class Register {
     @Size(min = 4, max = 32, message = "Длина логина должна быть от 4 до 32 символов")
     private String username;
     @Size(min = 8, max = 16, message = "Длина пароля должна быть от 8 до 16 символов")

@@ -6,7 +6,7 @@ import lombok.Data;
  * DTO для создания комментария
  */
 @Data
-public class CreateOrUpdateComment {
+public class CommentCreateOrUpdate {
     /**
      * текст комментария
      */
