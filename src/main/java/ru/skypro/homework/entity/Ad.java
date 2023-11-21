@@ -14,7 +14,7 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String image;
+    private String imageUri;
     private int price;
     private String title;
     private String description;

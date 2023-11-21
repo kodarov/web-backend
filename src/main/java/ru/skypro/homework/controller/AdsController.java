@@ -2,6 +2,7 @@ package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import ru.skypro.homework.dto.AdCreateOrUpdate;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdInfo;
 import ru.skypro.homework.dto.AdsAll;
+import ru.skypro.homework.entity.Ad;
+import ru.skypro.homework.entity.AdImage;
 
 import java.io.IOException;
 
@@ -25,11 +28,12 @@ public class AdsController {
      * Добавление объявления
      *
      * @param image
-     * @param ad
+     * @param adCreateOrUpdate
      * @return
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdDto> addAd(@RequestPart("image") MultipartFile image, @RequestPart("properties") AdDto ad) throws IOException {
+    public ResponseEntity<AdDto> addAd(@RequestPart("image") MultipartFile image,
+                                       @RequestPart("properties") AdCreateOrUpdate adCreateOrUpdate) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(new AdDto());
     }
 
@@ -104,5 +108,21 @@ public class AdsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+
+    /**
+     * Вспомогательный эндпоинт получения картинки объявления
+     * @param idAd
+     * @return
+     */
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getImageAd(@PathVariable("id") Integer idAd){
+        //пока без бизнес-логики
+        AdImage adImage = new AdImage();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(adImage.getMediaType()));
+        headers.setContentLength(adImage.getData().length);
+        return ResponseEntity.ok().headers(headers).body(adImage.getData());
     }
 }
