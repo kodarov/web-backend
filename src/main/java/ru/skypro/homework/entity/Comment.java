@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Сущность комментарий
@@ -16,7 +17,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private Timestamp dateTime;
+    private LocalDateTime dateTime;
     private String text;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

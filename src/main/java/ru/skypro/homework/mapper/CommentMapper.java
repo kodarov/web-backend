@@ -5,6 +5,7 @@ import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.entity.Comment;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,9 +14,9 @@ public class CommentMapper {
     public static CommentDto CommentToDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setAuthor(comment.getUser().getId());
-        commentDto.setAuthorImage(comment.getUser().getAvatarUri());
+        commentDto.setAuthorImage(String.format("me/%d/image",comment.getUser().getAvatar().getId()));
         commentDto.setAuthorFirstName(comment.getUser().getFirstName());
-        commentDto.setCreatedAt(comment.getDateTime().getTime());
+        commentDto.setCreatedAt(comment.getDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         commentDto.setPk(comment.getId());
         commentDto.setText(comment.getText());
         return commentDto;
