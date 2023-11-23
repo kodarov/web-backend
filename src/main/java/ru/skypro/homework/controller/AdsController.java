@@ -119,10 +119,6 @@ public class AdsController {
     public ResponseEntity<byte[]> getImageAd(@PathVariable("id") Integer idAd){
         //пока без бизнес-логики
         AdImage adImage = new AdImage();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(adImage.getMediaType()));
-        headers.setContentLength(adImage.getData().length);
-        return ResponseEntity.ok().headers(headers).body(adImage.getData());
+        return ResponseEntity.ok().body(adImage.getData());
     }
 }

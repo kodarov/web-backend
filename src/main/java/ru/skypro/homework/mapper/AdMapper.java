@@ -17,7 +17,7 @@ public class AdMapper {
         adInfo.setAuthorLastName(ad.getUser().getLastName());
         adInfo.setDescription(ad.getDescription());
         adInfo.setEmail(ad.getUser().getLogin());
-        adInfo.setImage(ad.getImageUri());
+        adInfo.setImage(String.format("/ads/%d/image",ad.getAdImage().getId()));
         adInfo.setPhone(ad.getUser().getPhone());
         adInfo.setPrice(ad.getPrice());
         adInfo.setTitle(ad.getTitle());
@@ -37,7 +37,7 @@ public class AdMapper {
     public static AdDto outDtoAd(Ad ad) {
         AdDto adDto = new AdDto();
         adDto.setAuthor(ad.getUser().getId());
-        adDto.setImage(ad.getImageUri());
+        adDto.setImage(String.format("/ads/%d/image",ad.getAdImage().getId()));
         adDto.setPk(ad.getId());
         adDto.setPrice(ad.getPrice());
         adDto.setTitle(ad.getTitle());
