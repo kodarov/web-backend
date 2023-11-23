@@ -66,11 +66,7 @@ public class UsersController {
     public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer idAd){
         //пока без бизнес-логики
         Avatar avatar = new Avatar();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
-        headers.setContentLength(avatar.getData().length);
-        return ResponseEntity.ok().headers(headers).body(avatar.getData());
+        return ResponseEntity.ok().body(avatar.getData());
     }
 
 }

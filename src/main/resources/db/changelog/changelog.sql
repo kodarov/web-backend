@@ -1,6 +1,23 @@
 -- liquibase formatted sql
 
---changeset 1 kodarov_s: users
+--changeset 1 kodarov_s: avatar
+CREATE TABLE avatar
+(
+    id      SERIAL PRIMARY KEY,
+    data    BYTEA CHECK (LENGTH(data) <= 5 * 1024 * 1024)
+    --user_id SERIAL NOT NULL,
+    --FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE -- удалим вместе с user и все avatar
+);
+--changeset 2 kodarov_s: ad_image
+CREATE TABLE ad_image
+(
+    id    SERIAL PRIMARY KEY,
+    data  BYTEA CHECK (LENGTH(data) <= 10 * 1024 * 1024)
+    --ad_id SERIAL NOT NULL,
+    --FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE -- удалим вместе с ad все его ad_image
+);
+
+--changeset 3 kodarov_s: users
 CREATE TYPE USER_ROLE AS ENUM ('USER','ADMIN');
 CREATE TABLE users
 (
@@ -11,9 +28,10 @@ CREATE TABLE users
     last_name  VARCHAR(50),
     phone      VARCHAR(50) UNIQUE,
     role       USER_ROLE   NOT NULL,
-    avatar_uri VARCHAR(50)
+    avatar_id SERIAL,
+    FOREIGN KEY (avatar_id) REFERENCES avatar (id)
 );
---changeset 2 kodarov_s: ads
+--changeset 4 kodarov_s: ads
 CREATE TABLE ads
 (
     id          SERIAL PRIMARY KEY,
@@ -22,9 +40,11 @@ CREATE TABLE ads
     title       VARCHAR(255) NOT NULL,
     description TEXT,
     user_id     SERIAL       NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE -- удалим вместе с user и все ad
+    ad_image_id SERIAL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE, -- удалим вместе с user и все ad
+    FOREIGN KEY (ad_image_id) REFERENCES ad_image (id)
 );
---changeset 3 kodarov_s: comments
+--changeset 5 kodarov_s: comments
 CREATE TABLE comments
 (
     id        SERIAL PRIMARY KEY,
@@ -34,24 +54,4 @@ CREATE TABLE comments
     ad_id     SERIAL    NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (ad_id) REFERENCES ads
-);
-
-CREATE TABLE avatar
-(
-    id         SERIAL PRIMARY KEY,
-    file_size  INT8,
-    media_type VARCHAR(15),
-    data       BYTEA CHECK (LENGTH(data) <= 5 * 1024 * 1024),
-    user_id    SERIAL NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE -- удалим вместе с user и все avatar
-);
-
-CREATE TABLE ad_image
-(
-    id         SERIAL PRIMARY KEY,
-    file_size  INT8,
-    media_type VARCHAR(15),
-    data       BYTEA CHECK (LENGTH(data) <= 10 * 1024 * 1024),
-    ad_id      SERIAL NOT NULL,
-    FOREIGN KEY (ad_id) REFERENCES ads (id) ON DELETE CASCADE -- удалим вместе с ad все его ad_image
 );
