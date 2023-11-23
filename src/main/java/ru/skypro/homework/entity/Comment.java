@@ -2,25 +2,28 @@ package ru.skypro.homework.entity;
 
 import lombok.Data;
 
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-//@Entity
+/**
+ * Сущность комментарий
+ * @Comment
+ */
+@Entity(name = "comments")
 @Data
 public class Comment {
-
     @Id
-    private Long id;
-    private String authorImage;
-    private String authorFirstName;
-    private LocalDate localDate;
-    public Comment(User user,String text)
-    {
-        this.authorFirstName=user.getFirstName();
-        this.authorImage=user.getImage();
-
-    }
-    public Comment() {
-    }
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private LocalDateTime dateTime;
+    private String text;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "ad_id", nullable = false)
+    private Ad ad;
 
 }
