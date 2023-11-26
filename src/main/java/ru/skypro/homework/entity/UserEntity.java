@@ -19,7 +19,7 @@ public class UserEntity {
     private String password;
     private String firstName;
     private String lastName;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Avatar avatar;
     private String phone;
     @Enumerated(EnumType.STRING)

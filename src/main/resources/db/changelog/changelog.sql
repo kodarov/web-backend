@@ -14,11 +14,11 @@ CREATE TABLE users
 (
     id         SERIAL PRIMARY KEY,
     login      VARCHAR(50) NOT NULL UNIQUE,
-    password   VARCHAR(255),
+    password   VARCHAR(255) NOT NULL,
     first_name VARCHAR(50),
     last_name  VARCHAR(50),
     phone      VARCHAR(50),
-    role       VARCHAR(50)
+    role       VARCHAR(50) NOT NULL
 );
 --changeset 3 kodarov_s: avatar
 CREATE TABLE avatars
