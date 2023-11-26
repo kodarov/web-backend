@@ -4,7 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "avatars")
 @Data
 public class Avatar {
     @Id
@@ -12,4 +12,6 @@ public class Avatar {
     private int id;
     @Column(columnDefinition = "bytea")
     private byte[] data;
+    @OneToOne
+    User user;
 }

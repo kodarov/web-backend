@@ -19,7 +19,7 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
-    @OneToOne
+    @OneToOne(mappedBy = "user")
     private Avatar avatar;
     private String phone;
     @Enumerated(EnumType.STRING)
