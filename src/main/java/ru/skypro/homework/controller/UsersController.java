@@ -46,6 +46,7 @@ public class UsersController {
     @PatchMapping("/me")
     public UserUpdate updateUser(@RequestBody UserUpdate userUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        userService.updateUser(auth,userUpdate);
         return new UserUpdate();
     }
 
@@ -57,6 +58,7 @@ public class UsersController {
      */
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
+
         return ResponseEntity.ok().build();
     }
 

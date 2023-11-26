@@ -17,11 +17,10 @@ public class UserMapper {
         return dto;
     }
 
-    public static UserEntity inDto(UserUpdate userUpdate){
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFirstName(userUpdate.getFirstName());
-        userEntity.setLastName(userUpdate.getLastName());
-        userEntity.setPhone(userUpdate.getPhone());
-        return userEntity;
+    public static UserEntity inDto(UserUpdate userUpdate, UserEntity user){
+        user.setFirstName(userUpdate.getFirstName());
+        user.setLastName(userUpdate.getLastName());
+        user.setPhone(userUpdate.getPhone());
+        return user;
     }
 }

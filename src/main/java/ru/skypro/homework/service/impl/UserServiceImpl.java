@@ -25,9 +25,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdate updateUser(Authentication auth, UserUpdate user) {
+    public UserUpdate updateUser(Authentication auth, UserUpdate userUpdate) {
         log.info("сервис updateUser");
-        return null;
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+        UserEntity updatedUser = UserMapper.inDto(userUpdate,userEntity);
+        userRepository.save(updatedUser);
+        return userUpdate;
     }
 
     @Override
