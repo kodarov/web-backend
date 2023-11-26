@@ -19,7 +19,8 @@ public class UserEntity {
     private String password;
     private String firstName;
     private String lastName;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "avatar_id",referencedColumnName = "id")
     private Avatar avatar;
     private String phone;
     @Enumerated(EnumType.STRING)
