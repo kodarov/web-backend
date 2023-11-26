@@ -7,11 +7,11 @@ import javax.persistence.*;
 
 /**
  * Сущность юзера
- * @User
+ * @UsersEntity
  */
 @Entity(name = "users")
 @Data
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

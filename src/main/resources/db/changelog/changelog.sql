@@ -26,7 +26,7 @@ CREATE TABLE avatars
     id      SERIAL PRIMARY KEY,
     data    BYTEA CHECK (LENGTH(data) <= 5 * 1024 * 1024),
     user_id SERIAL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE -- удалим вместе с user и avatar
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE -- удалим вместе с userEntity и avatar
 );
 --changeset 4 kodarov_s: ad_image
 CREATE TABLE ad_image
@@ -47,7 +47,7 @@ CREATE TABLE ads
     description TEXT,
     user_id     SERIAL       NOT NULL,
     ad_image_id SERIAL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE, -- удалим вместе с user и все ad
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE, -- удалим вместе с userEntity и все ad
     FOREIGN KEY (ad_image_id) REFERENCES ad_image (id)
 );
 --changeset 6 kodarov_s: comments

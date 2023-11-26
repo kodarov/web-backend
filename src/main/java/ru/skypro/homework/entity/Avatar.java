@@ -13,5 +13,5 @@ public class Avatar {
     @Column(columnDefinition = "bytea")
     private byte[] data;
     @OneToOne
-    User user;
+    UserEntity user;
 }
