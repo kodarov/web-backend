@@ -3,6 +3,7 @@ package ru.skypro.homework.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,19 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UsersController {
     private final UserService userService;
+
+    /**
+     * Обновление пароля
+     *
+     * @param pass
+     * @return
+     */
+    @PostMapping("/set_password")
+    public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        userService.updatePassword(auth,pass);
+        return ResponseEntity.ok().build();
+    }
 
     /**
      * Получение информации об авторизованном пользователе
@@ -58,27 +72,16 @@ public class UsersController {
      */
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
-
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Обновление пароля
-     *
-     * @param pass
-     * @return
-     */
-    @PostMapping("/set_password")
-    public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        userService.updatePassword(auth,pass);
-        return ResponseEntity.ok().build();
+        if (userService.updateAvatar(auth,image)){
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer idUser){
-        //пока без бизнес-логики
-        Avatar avatar = new Avatar();
-        return ResponseEntity.ok().body(avatar.getData());
+
+    @GetMapping("/me/image/{id}")
+    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId){
+        return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
 
 }

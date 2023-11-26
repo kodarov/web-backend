@@ -13,7 +13,7 @@ public class UserMapper {
         dto.setLastName(userEntity.getLastName());
         dto.setPhone(userEntity.getPhone());
         dto.setRole(userEntity.getRole());
-        dto.setImage(String.format("me/%d/image", userEntity.getAvatar().getId()));
+        dto.setImage(String.format("/users/me/image/%d", userEntity.getAvatar().getId()));
         return dto;
     }
 

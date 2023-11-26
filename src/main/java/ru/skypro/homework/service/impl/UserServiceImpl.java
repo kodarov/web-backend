@@ -9,15 +9,21 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
+import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
+import ru.skypro.homework.repositories.AvatarRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.UserService;
+
+import java.io.IOException;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final AvatarRepository avatarRepository;
     private final PasswordEncoder encoder;
     @Override
     public UserInfo getUser(Authentication auth) {
@@ -49,14 +55,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateAvatar(Authentication auth, MultipartFile image) {
+    public boolean updateAvatar(Authentication auth, MultipartFile image) throws IOException {
         log.info("сервис updateAvatar");
-        return false;
+        try {
+            UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+            Avatar avatar = userEntity.getAvatar();
+            avatar.setData(image.getBytes());
+            userEntity.setAvatar(avatar);
+            userRepository.save(userEntity);
+            return true;
+        }
+        catch (IOException e){
+            return false;
+        }
     }
 
     @Override
-    public byte[] getAvatar(int idUser) {
+    public byte[] getAvatar(int avatarId) {
         log.info("сервис getAvatar");
-        return new byte[0];
+        Avatar avatar = avatarRepository.findById(avatarId).orElseThrow();
+        return avatar.getData();
     }
 }

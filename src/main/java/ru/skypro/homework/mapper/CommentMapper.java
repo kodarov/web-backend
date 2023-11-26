@@ -14,7 +14,7 @@ public class CommentMapper {
     public static CommentDto CommentToDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setAuthor(comment.getUserEntity().getId());
-        commentDto.setAuthorImage(String.format("me/%d/image",comment.getUserEntity().getAvatar().getId()));
+        commentDto.setAuthorImage(String.format("/users/me/image/%d",comment.getUserEntity().getAvatar().getId()));
         commentDto.setAuthorFirstName(comment.getUserEntity().getFirstName());
         commentDto.setCreatedAt(comment.getDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         commentDto.setPk(comment.getId());

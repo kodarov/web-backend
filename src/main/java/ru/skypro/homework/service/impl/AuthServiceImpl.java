@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setLastName("lastName");
         newUser.setPhone("+79616544133");
         newUser.setRole(Role.USER);
-        newUser.setAvatar(new Avatar());
+        newUser.setAvatar(new Avatar()); //пока так
         userRepository.save(newUser);
 
         return encoder.matches(password, userDetails.getPassword());
