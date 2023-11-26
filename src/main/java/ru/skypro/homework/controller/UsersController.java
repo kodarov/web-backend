@@ -1,9 +1,12 @@
 package ru.skypro.homework.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
@@ -11,6 +14,7 @@ import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
 import ru.skypro.homework.entity.AdImage;
 import ru.skypro.homework.entity.Avatar;
+import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
 
@@ -18,7 +22,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(value = "http://localhost:3000")
+@RequiredArgsConstructor
 public class UsersController {
+    private final UserService userService;
+
     /**
      * Получение информации об авторизованном пользователе
      *
@@ -26,7 +33,8 @@ public class UsersController {
      */
     @GetMapping("/me")
     public UserInfo getUserInfo() {
-        return new UserInfo();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userService.getUser(auth);
     }
 
     /**
@@ -37,6 +45,7 @@ public class UsersController {
      */
     @PatchMapping("/me")
     public UserUpdate updateUser(@RequestBody UserUpdate userUpdate) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return new UserUpdate();
     }
 
@@ -63,7 +72,7 @@ public class UsersController {
         return ResponseEntity.ok().build();
     }
     @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer idAd){
+    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer idUser){
         //пока без бизнес-логики
         Avatar avatar = new Avatar();
         return ResponseEntity.ok().body(avatar.getData());
