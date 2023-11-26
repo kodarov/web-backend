@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
@@ -17,6 +18,7 @@ import ru.skypro.homework.service.UserService;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
     @Override
     public UserInfo getUser(Authentication auth) {
         log.info("сервис getUser");
@@ -36,6 +38,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updatePassword(Authentication auth, NewPassword password) {
         log.info("сервис updatePassword");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+        if (encoder.matches(password.getCurrentPassword(), userEntity.getPassword())){ //совпадает ли текущий с хэшем?
+            userEntity.setPassword(encoder.encode(password.getNewPassword())); // тогда сохраняем хэш нового пароля
+            userRepository.save(userEntity);
+            log.info("пароль изменен");
+            return true;
+        }
         return false;
     }
 

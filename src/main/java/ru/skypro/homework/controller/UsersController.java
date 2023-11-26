@@ -70,7 +70,8 @@ public class UsersController {
      */
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
-        log.info("Изменение пароля");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        userService.updatePassword(auth,pass);
         return ResponseEntity.ok().build();
     }
     @GetMapping("/{id}/image")
