@@ -14,7 +14,7 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     private AdImage adImage;
     private int price;
     private String title;

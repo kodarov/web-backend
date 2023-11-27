@@ -12,7 +12,4 @@ public class Avatar {
     private int id;
     @Column(columnDefinition = "bytea")
     private byte[] data;
-/*    @OneToOne(mappedBy = "avatar")
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    UserEntity user;*/
 }
