@@ -10,5 +10,5 @@ import java.util.List;
 @Data
 public class AdsAll {
     private int count;
-    private List<AdDto> result;
+    private List<AdDto> results;
 }

@@ -7,14 +7,16 @@ import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdInfo;
 import ru.skypro.homework.dto.AdsAll;
 
+import java.io.IOException;
+
 public interface AdService {
-    AdDto addAd(Authentication auth,MultipartFile image, AdCreateOrUpdate adCrOrUpd);
+    AdDto addAd(Authentication auth, AdCreateOrUpdate adCrOrUpd, MultipartFile image) throws IOException;
     AdInfo getAd(int adId);
-    AdDto update(Authentication auth, int idAd, AdCreateOrUpdate adCrOrUpd);
+    AdDto updateAd(Authentication auth, int idAd, AdCreateOrUpdate adCrOrUpd) throws Exception;
     boolean delete(Authentication auth, int idAd);
     AdsAll getAllAds();
     AdsAll getAllAdsAuth(Authentication auth);
-    byte[] updateImageAd(Authentication auth, int id, MultipartFile image);
+    byte[] updateImageAd(Authentication auth, int id, MultipartFile image) throws IOException;
     byte[] getImageAd(int idAd);
 
 }

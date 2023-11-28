@@ -6,6 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdCreateOrUpdate;
@@ -14,6 +16,7 @@ import ru.skypro.homework.dto.AdInfo;
 import ru.skypro.homework.dto.AdsAll;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.AdImage;
+import ru.skypro.homework.service.AdService;
 
 import java.io.IOException;
 
@@ -23,6 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RequestMapping("/ads")
 public class AdsController {
+    private  final AdService adService;
 
     /**
      * Добавление объявления
@@ -32,9 +36,11 @@ public class AdsController {
      * @return
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdDto> addAd(@RequestPart("image") MultipartFile image,
-                                       @RequestPart("properties") AdCreateOrUpdate adCreateOrUpdate) throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AdDto());
+    public ResponseEntity<AdDto> addAd(@RequestPart("properties") AdCreateOrUpdate adCreateOrUpdate,
+                                       @RequestPart("image") MultipartFile image) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AdDto adDto = adService.addAd(auth,adCreateOrUpdate,image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(adDto);
     }
 
     /**
@@ -44,8 +50,9 @@ public class AdsController {
      * @return
      */
     @GetMapping(value = "/{id}")
-    public AdInfo getAd(@PathVariable Integer id) {
-        return new AdInfo();
+    public ResponseEntity<AdInfo> getAd(@PathVariable Integer id) {
+        AdInfo adInfo = adService.getAd(id);
+        return ResponseEntity.ok(adInfo);
     }
 
     /**
@@ -57,8 +64,11 @@ public class AdsController {
      */
     @PatchMapping(value = "/{id}")
     public ResponseEntity<AdDto> updateAd(@PathVariable Integer id,
-                                          @RequestBody AdCreateOrUpdate adCreateOrUpdate) {
-        return ResponseEntity.ok(new AdDto());
+                                          @RequestBody AdCreateOrUpdate adCreateOrUpdate) throws Exception {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        AdDto adDto = adService.updateAd(auth,id,adCreateOrUpdate);
+        return ResponseEntity.ok(adDto);
     }
 
     /**
@@ -69,7 +79,10 @@ public class AdsController {
      */
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteAd(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (adService.delete(auth,id)){
+           return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
@@ -79,7 +92,7 @@ public class AdsController {
      */
     @GetMapping
     public ResponseEntity<AdsAll> getAllAds() {
-        return ResponseEntity.ok(new AdsAll());
+        return ResponseEntity.ok(adService.getAllAds());
     }
 
     /**
@@ -89,7 +102,8 @@ public class AdsController {
      */
     @GetMapping(value = "/me")
     public ResponseEntity<AdsAll> getAdsMe() {
-        return ResponseEntity.ok(new AdsAll());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(adService.getAllAdsAuth(auth));
     }
 
     /**
@@ -99,15 +113,15 @@ public class AdsController {
      * @return
      * @throws IOException
      */
-    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PatchMapping(value = "/image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestPart("image") MultipartFile image) throws IOException {
         try {
-            return ResponseEntity.ok(image.getBytes()); //заглушка
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            return ResponseEntity.ok(adService.updateImageAd(auth,id,image));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     /**
@@ -115,10 +129,8 @@ public class AdsController {
      * @param idAd
      * @return
      */
-    @GetMapping("/{id}/image")
+    @GetMapping("/image/{id}")
     public ResponseEntity<byte[]> getImageAd(@PathVariable("id") Integer idAd){
-        //пока без бизнес-логики
-        AdImage adImage = new AdImage();
-        return ResponseEntity.ok().body(adImage.getData());
+        return ResponseEntity.ok().body(adService.getImageAd(idAd));
     }
 }

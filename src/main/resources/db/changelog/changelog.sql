@@ -39,7 +39,6 @@ CREATE TABLE ad_image
 CREATE TABLE ads
 (
     id          SERIAL PRIMARY KEY,
-    image_uri   VARCHAR(50),
     price       INTEGER,
     title       VARCHAR(255) NOT NULL,
     description TEXT,
@@ -54,7 +53,7 @@ CREATE TABLE comments
     date_time TIMESTAMP,
     text      TEXT,
     user_id   SERIAL    REFERENCES users(id),
-    ad_id     SERIAL    REFERENCES ads(id),
+    ad_id     SERIAL    REFERENCES ads(id)
 );
 
 
