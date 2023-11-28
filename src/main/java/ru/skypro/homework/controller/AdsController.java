@@ -66,7 +66,6 @@ public class AdsController {
     public ResponseEntity<AdDto> updateAd(@PathVariable Integer id,
                                           @RequestBody AdCreateOrUpdate adCreateOrUpdate) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         AdDto adDto = adService.updateAd(auth,id,adCreateOrUpdate);
         return ResponseEntity.ok(adDto);
     }

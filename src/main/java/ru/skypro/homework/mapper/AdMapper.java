@@ -46,11 +46,15 @@ public class AdMapper {
 
     public static Ad inDtoUpdate(AdCreateOrUpdate adCrtOrUpd) {
         Ad ad = new Ad();
-
         ad.setTitle(adCrtOrUpd.getTitle());
         ad.setPrice(adCrtOrUpd.getPrice());
         ad.setDescription(adCrtOrUpd.getDescription());
-
+        return ad;
+    }
+    public static Ad inDtoUpdate(AdCreateOrUpdate adCrtOrUpd, Ad ad) {
+        ad.setTitle(adCrtOrUpd.getTitle());
+        ad.setPrice(adCrtOrUpd.getPrice());
+        ad.setDescription(adCrtOrUpd.getDescription());
         return ad;
     }
 

@@ -52,8 +52,8 @@ public class AdServiceImpl implements AdService {
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
         Ad ad = adRepository.findById(idAd).orElseThrow();
         if (userEntity.getId() == ad.getUserEntity().getId()) {
-            Ad newAd = AdMapper.inDtoUpdate(adCrOrUpd);
-            return AdMapper.outDtoAd(newAd);
+            Ad updatedAd = AdMapper.inDtoUpdate(adCrOrUpd,ad);
+            return AdMapper.outDtoAd(updatedAd);
         } else throw new Exception(); //временно
     }
 
