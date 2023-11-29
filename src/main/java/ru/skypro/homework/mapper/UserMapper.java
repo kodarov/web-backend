@@ -2,23 +2,22 @@ package ru.skypro.homework.mapper;
 
 import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
-import ru.skypro.homework.entity.User;
+import ru.skypro.homework.entity.UserEntity;
 
 public class UserMapper {
-    public static UserInfo outDto(User user){
+    public static UserInfo outDto(UserEntity userEntity){
         UserInfo dto = new UserInfo();
-        dto.setId(user.getId());
-        dto.setEmail(user.getLogin());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setPhone(user.getPhone());
-        dto.setRole(user.getRole());
-        dto.setImage(String.format("me/%d/image",user.getAvatar().getId()));
+        dto.setId(userEntity.getId());
+        dto.setEmail(userEntity.getLogin());
+        dto.setFirstName(userEntity.getFirstName());
+        dto.setLastName(userEntity.getLastName());
+        dto.setPhone(userEntity.getPhone());
+        dto.setRole(userEntity.getRole());
+        dto.setImage(String.format("/users/me/image/%d", userEntity.getAvatar().getId()));
         return dto;
     }
 
-    public static User inDto(UserUpdate userUpdate){
-        User user = new User();
+    public static UserEntity inDto(UserUpdate userUpdate, UserEntity user){
         user.setFirstName(userUpdate.getFirstName());
         user.setLastName(userUpdate.getLastName());
         user.setPhone(userUpdate.getPhone());

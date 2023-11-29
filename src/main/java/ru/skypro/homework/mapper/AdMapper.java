@@ -13,12 +13,12 @@ public class AdMapper {
         AdInfo adInfo = new AdInfo();
 
         adInfo.setPk(ad.getId());
-        adInfo.setAuthorFirstName(ad.getUser().getFirstName());
-        adInfo.setAuthorLastName(ad.getUser().getLastName());
+        adInfo.setAuthorFirstName(ad.getUserEntity().getFirstName());
+        adInfo.setAuthorLastName(ad.getUserEntity().getLastName());
         adInfo.setDescription(ad.getDescription());
-        adInfo.setEmail(ad.getUser().getLogin());
-        adInfo.setImage(String.format("/ads/%d/image",ad.getAdImage().getId()));
-        adInfo.setPhone(ad.getUser().getPhone());
+        adInfo.setEmail(ad.getUserEntity().getLogin());
+        adInfo.setImage(String.format("/ads/image/%d",ad.getAdImage().getId()));
+        adInfo.setPhone(ad.getUserEntity().getPhone());
         adInfo.setPrice(ad.getPrice());
         adInfo.setTitle(ad.getTitle());
 
@@ -29,15 +29,15 @@ public class AdMapper {
         AdsAll adsAll = new AdsAll();
 
         adsAll.setCount(adListDto.size());
-        adsAll.setResult(adListDto);
+        adsAll.setResults(adListDto);
 
         return adsAll;
     }
 
     public static AdDto outDtoAd(Ad ad) {
         AdDto adDto = new AdDto();
-        adDto.setAuthor(ad.getUser().getId());
-        adDto.setImage(String.format("/ads/%d/image",ad.getAdImage().getId()));
+        adDto.setAuthor(ad.getUserEntity().getId());
+        adDto.setImage(String.format("/ads/image/%d",ad.getAdImage().getId()));
         adDto.setPk(ad.getId());
         adDto.setPrice(ad.getPrice());
         adDto.setTitle(ad.getTitle());
@@ -46,11 +46,15 @@ public class AdMapper {
 
     public static Ad inDtoUpdate(AdCreateOrUpdate adCrtOrUpd) {
         Ad ad = new Ad();
-
         ad.setTitle(adCrtOrUpd.getTitle());
         ad.setPrice(adCrtOrUpd.getPrice());
         ad.setDescription(adCrtOrUpd.getDescription());
-
+        return ad;
+    }
+    public static Ad inDtoUpdate(AdCreateOrUpdate adCrtOrUpd, Ad ad) {
+        ad.setTitle(adCrtOrUpd.getTitle());
+        ad.setPrice(adCrtOrUpd.getPrice());
+        ad.setDescription(adCrtOrUpd.getDescription());
         return ad;
     }
 

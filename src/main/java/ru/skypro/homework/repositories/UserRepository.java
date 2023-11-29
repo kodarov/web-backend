@@ -2,10 +2,11 @@ package ru.skypro.homework.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.skypro.homework.entity.User;
+import ru.skypro.homework.entity.UserEntity;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
+    Optional<UserEntity> findUserEntityByLoginIgnoreCase(String login);
 }

@@ -7,11 +7,11 @@ import javax.persistence.*;
 
 /**
  * Сущность юзера
- * @User
+ * @UsersEntity
  */
 @Entity(name = "users")
 @Data
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -19,7 +19,8 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "avatar_id",referencedColumnName = "id")
     private Avatar avatar;
     private String phone;
     @Enumerated(EnumType.STRING)

@@ -3,8 +3,6 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -21,7 +19,7 @@ public class Comment {
     private String text;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
     @ManyToOne
     @JoinColumn(name = "ad_id", nullable = false)
     private Ad ad;

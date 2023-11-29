@@ -14,12 +14,12 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     private AdImage adImage;
     private int price;
     private String title;
     private String description;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 }
