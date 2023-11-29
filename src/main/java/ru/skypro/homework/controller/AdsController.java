@@ -2,7 +2,6 @@ package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,6 @@ import ru.skypro.homework.dto.AdCreateOrUpdate;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdInfo;
 import ru.skypro.homework.dto.AdsAll;
-import ru.skypro.homework.entity.Ad;
-import ru.skypro.homework.entity.AdImage;
 import ru.skypro.homework.service.AdService;
 
 import java.io.IOException;
@@ -50,9 +47,9 @@ public class AdsController {
      * @return
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AdInfo> getAd(@PathVariable Integer id) {
+    public AdInfo getAd(@PathVariable Integer id) {
         AdInfo adInfo = adService.getAd(id);
-        return ResponseEntity.ok(adInfo);
+        return adInfo;
     }
 
     /**
@@ -63,11 +60,11 @@ public class AdsController {
      * @return
      */
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<AdDto> updateAd(@PathVariable Integer id,
-                                          @RequestBody AdCreateOrUpdate adCreateOrUpdate) throws Exception {
+    public AdDto updateAd(@PathVariable Integer id,
+                          @RequestBody AdCreateOrUpdate adCreateOrUpdate) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AdDto adDto = adService.updateAd(auth,id,adCreateOrUpdate);
-        return ResponseEntity.ok(adDto);
+        return adDto;
     }
 
     /**
@@ -81,7 +78,9 @@ public class AdsController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (adService.delete(auth,id)){
            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     /**

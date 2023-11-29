@@ -25,18 +25,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AvatarRepository avatarRepository;
     private final PasswordEncoder encoder;
+    private final UserMapper userMapper;
     @Override
     public UserInfo getUser(Authentication auth) {
         log.info("сервис getUser");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
-        return UserMapper.outDto(userEntity);
+        return userMapper.outDto(userEntity);
     }
 
     @Override
     public UserUpdate updateUser(Authentication auth, UserUpdate userUpdate) {
         log.info("сервис updateUser");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
-        UserEntity updatedUser = UserMapper.inDto(userUpdate,userEntity);
+        UserEntity updatedUser = userMapper.inDto(userUpdate,userEntity);
         userRepository.save(updatedUser);
         return userUpdate;
     }

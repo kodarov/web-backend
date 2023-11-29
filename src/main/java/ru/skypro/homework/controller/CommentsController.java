@@ -42,9 +42,6 @@ public class CommentsController {
     @GetMapping("/{adId}/comments")
     public ResponseEntity<Comments> getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!auth.isAuthenticated()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         Comments comments = commentService.getComments(auth,adId);
         if (comments.getCount() == 0){
             return ResponseEntity.notFound().build();

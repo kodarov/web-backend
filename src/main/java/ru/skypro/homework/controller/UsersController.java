@@ -73,13 +73,16 @@ public class UsersController {
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (userService.updateAvatar(auth,image)){
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        userService.updateAvatar(auth,image);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/me/image/{id}")
+    /**
+     * Вспомогательный эндпоинт получения аватара
+     * @param avatarId
+     * @return
+     */
+    @GetMapping("/avatars/{id}")
     public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId){
         return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
