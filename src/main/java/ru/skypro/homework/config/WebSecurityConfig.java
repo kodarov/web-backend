@@ -13,6 +13,7 @@ import ru.skypro.homework.dto.Role;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+//@Deprecated
 @Configuration
 public class WebSecurityConfig {
 

@@ -27,24 +27,25 @@ import java.util.stream.Collectors;
 public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
+    private final AdMapper adMapper;
     @Override
     public AdDto addAd(Authentication auth, AdCreateOrUpdate adCrOrUpd,MultipartFile image) throws IOException {
         log.info("сервис addAd");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
-        Ad ad = AdMapper.inDtoUpdate(adCrOrUpd);
+        Ad ad = adMapper.inDtoUpdate(adCrOrUpd);
         AdImage adImage = new AdImage();
         adImage.setData(image.getBytes());
 
         ad.setAdImage(adImage);
         ad.setUserEntity(userEntity);
         adRepository.save(ad);
-        return AdMapper.outDtoAd(ad);
+        return adMapper.outDtoAd(ad);
     }
 
     @Override
     public AdInfo getAd(int adId) {
         Ad ad = adRepository.findById(adId).orElseThrow();
-        return AdMapper.outDtoInfo(ad);
+        return adMapper.outDtoInfo(ad);
     }
 
     @Override
@@ -52,9 +53,11 @@ public class AdServiceImpl implements AdService {
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
         Ad ad = adRepository.findById(idAd).orElseThrow();
         if (userEntity.getId() == ad.getUserEntity().getId()) {
-            Ad updatedAd = AdMapper.inDtoUpdate(adCrOrUpd,ad);
-            return AdMapper.outDtoAd(updatedAd);
-        } else throw new Exception(); //временно
+            Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd,ad);
+            return adMapper.outDtoAd(updatedAd);
+        } else {
+            throw new Exception(); //временно
+        }
     }
 
     @Override
@@ -71,17 +74,17 @@ public class AdServiceImpl implements AdService {
     public AdsAll getAllAds() {
         List<Ad> ads = adRepository.findAll();
         List<AdDto> adDtoList = ads.stream()
-                .map(AdMapper::outDtoAd)
+                .map(adMapper::outDtoAd)
                 .collect(Collectors.toList());
-        return AdMapper.outDtoAll(adDtoList);
+        return adMapper.outDtoAll(adDtoList);
     }
 
     @Override
     public AdsAll getAllAdsAuth(Authentication auth) {
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
         List<Ad> adList = adRepository.findAdByUserEntity(userEntity);
-        List<AdDto> adDtoList = adList.stream().map(AdMapper::outDtoAd).collect(Collectors.toList()); // Переделать маппер adList To AdsAll
-        return  AdMapper.outDtoAll(adDtoList);
+        List<AdDto> adDtoList = adList.stream().map(adMapper::outDtoAd).collect(Collectors.toList()); // Переделать маппер adList To AdsAll
+        return  adMapper.outDtoAll(adDtoList);
     }
 
     @Override

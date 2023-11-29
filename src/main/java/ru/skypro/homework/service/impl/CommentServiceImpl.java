@@ -25,21 +25,22 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final AdRepository adRepository;
     private final UserRepository userRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public CommentDto addComment(Authentication auth, int adId, CommentCreateOrUpdate comCreOrUpd) {
         log.info("сервис метод addComment");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
         Ad ad = adRepository.findById(adId).orElseThrow();
-        Comment newComment = CommentMapper.inDto(userEntity, ad, comCreOrUpd);
-        return CommentMapper.outDto(commentRepository.save(newComment));
+        Comment newComment = commentMapper.inDto(userEntity, ad, comCreOrUpd);
+        return commentMapper.outDto(commentRepository.save(newComment));
     }
 
     @Override
     public Comments getComments(Authentication auth, int adId) {
         log.info("сервис метод getComments");
         List<Comment> commentList = commentRepository.findCommentsByAd_Id(adId);
-        return CommentMapper.outDtos(commentList);
+        return commentMapper.outDtos(commentList);
     }
 
     @Override
@@ -50,9 +51,9 @@ public class CommentServiceImpl implements CommentService {
         Comment currentComment = commentRepository.findById(commentId).orElseThrow();
         if(userEntity.equals(currentComment.getUserEntity()))
         {
-            Comment newComment = CommentMapper.inDto(userEntity,ad,comCreOrUpd);
+            Comment newComment = commentMapper.inDto(userEntity,ad,comCreOrUpd);
             newComment.setId(currentComment.getId()); // пока так, DTO переделать надо
-            return CommentMapper.outDto(commentRepository.save(newComment));
+            return commentMapper.outDto(commentRepository.save(newComment));
         }
         return  null; //добавить исключение!!!
     }
