@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     Optional<UserEntity> findUserEntityByLoginIgnoreCase(String login);
+    boolean existsByLoginIgnoreCase(String login);
 }

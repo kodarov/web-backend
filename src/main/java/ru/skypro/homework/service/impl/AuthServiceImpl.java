@@ -19,7 +19,7 @@ import ru.skypro.homework.service.AuthService;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
+    private final UserDetailsManagerImpl manager;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
@@ -29,19 +29,7 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         UserDetails userDetails = manager.loadUserByUsername(userName);
-        log.info("Вход юзера " + userName);
-
-        //для теста дублируем в БД
-        UserEntity newUser = new UserEntity();
-        newUser.setId(1);
-        newUser.setLogin("user@gmail.com");
-        newUser.setPassword(encoder.encode("password"));
-        newUser.setFirstName("firstName");
-        newUser.setLastName("lastName");
-        newUser.setPhone("+79616544133");
-        newUser.setRole(Role.USER);
-        newUser.setAvatar(new Avatar()); //пока так
-        userRepository.save(newUser);
+        log.info("Вход юзера " + userDetails);
 
         return encoder.matches(password, userDetails.getPassword());
     }
@@ -59,7 +47,6 @@ public class AuthServiceImpl implements AuthService {
                         .roles(register.getRole().name())
                         .build());
 
-        //для теста дублируем в БД
         UserEntity newUser = new UserEntity();
         newUser.setLogin(register.getUsername());
         newUser.setPassword(encoder.encode(register.getPassword()));
