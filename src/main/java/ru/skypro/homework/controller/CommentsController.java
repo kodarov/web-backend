@@ -29,6 +29,7 @@ public class CommentsController {
      * @param adId
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{adId}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
                                                  @RequestBody CommentCreateOrUpdate comment) {
@@ -43,15 +44,18 @@ public class CommentsController {
      * @param adId
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{adId}/comments")
-    public ResponseEntity<Comments> getComments(@PathVariable Integer adId) {
+    public Comments getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Comments comments = commentService.getComments(auth,adId);
-        if (comments.getCount() == 0){
+        //Если возвращаю notFound то фронт не отображает картинку объявления
+/*        if (comments.getCount() == 0){
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(comments);
-        }
+        }*/
+        return comments;
 
     }
 

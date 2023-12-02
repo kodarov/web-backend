@@ -33,6 +33,7 @@ public class AdsController {
      * @param adCreateOrUpdate
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDto> addAd(@RequestPart("properties") AdCreateOrUpdate adCreateOrUpdate,
                                        @RequestPart("image") MultipartFile image) throws IOException {
@@ -47,6 +48,7 @@ public class AdsController {
      * @param id
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/{id}")
     public AdInfo getAd(@PathVariable Integer id) {
         AdInfo adInfo = adService.getAd(id);
@@ -101,6 +103,7 @@ public class AdsController {
      *
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/me")
     public ResponseEntity<AdsAll> getAdsMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -114,6 +117,7 @@ public class AdsController {
      * @return
      * @throws IOException
      */
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestPart("image") MultipartFile image) throws IOException {
