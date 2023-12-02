@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ public class UsersController {
      * @param pass
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -45,6 +47,7 @@ public class UsersController {
      *
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public UserInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -57,6 +60,7 @@ public class UsersController {
      * @param userUpdate
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/me")
     public UserUpdate updateUser(@RequestBody UserUpdate userUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -70,6 +74,7 @@ public class UsersController {
      * @return
      * @throws IOException
      */
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
