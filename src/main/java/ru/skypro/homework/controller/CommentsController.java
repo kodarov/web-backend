@@ -29,7 +29,6 @@ public class CommentsController {
      * @param adId
      * @return
      */
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{adId}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
                                                  @RequestBody CommentCreateOrUpdate comment) {
@@ -44,7 +43,6 @@ public class CommentsController {
      * @param adId
      * @return
      */
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{adId}/comments")
     public Comments getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

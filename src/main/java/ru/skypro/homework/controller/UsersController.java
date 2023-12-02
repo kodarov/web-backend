@@ -8,7 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
@@ -60,7 +62,6 @@ public class UsersController {
      * @param userUpdate
      * @return
      */
-    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/me")
     public UserUpdate updateUser(@RequestBody UserUpdate userUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -74,7 +75,6 @@ public class UsersController {
      * @return
      * @throws IOException
      */
-    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -90,6 +90,12 @@ public class UsersController {
     @GetMapping("/avatars/{id}")
     public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId){
         return ResponseEntity.ok().body(userService.getAvatar(avatarId));
+    }
+
+    //для примера
+    @GetMapping("/test")
+    public UserDetails getTest(@AuthenticationPrincipal UserDetails userDetails){
+        return userDetails;
     }
 
 }
