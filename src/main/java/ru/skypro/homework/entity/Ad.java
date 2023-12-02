@@ -3,6 +3,7 @@ package ru.skypro.homework.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Сущность объявления
@@ -22,4 +23,6 @@ public class Ad {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 }
