@@ -6,8 +6,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
@@ -33,6 +36,7 @@ public class UsersController {
      * @param pass
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -45,6 +49,7 @@ public class UsersController {
      *
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public UserInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -86,5 +91,11 @@ public class UsersController {
     public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId){
         return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
+
+    //для примера, получение UserDetails через @AuthenticationPrincipal
+/*    @GetMapping("/test")
+    public UserDetails getTest(@AuthenticationPrincipal UserDetails userDetails){
+        return userDetails;
+    }*/
 
 }

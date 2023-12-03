@@ -15,6 +15,7 @@ import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.Validation;
 
 import java.util.List;
 
@@ -60,13 +61,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean deleteComment(Authentication auth, int adId, int commentId) {
-        log.info("сервис метод updateComment");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+        log.info("сервис метод deleteComment");
+        //UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
         Ad ad = adRepository.findById(adId).orElseThrow();
-        if(userEntity.equals(ad.getUserEntity())){
+        if(comment.getAd().equals(ad)){
            commentRepository.deleteById(commentId);
            return true;
         }
         return false;
     }
+    //доп метод валидации
+/*    public String getCommentAuthor(int commentId){
+        UserEntity userEntity = commentRepository.findById(commentId).orElseThrow().getUserEntity();
+        return userEntity.getLogin();
+    }*/
 }
