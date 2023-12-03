@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
-import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.repositories.UserRepository;
@@ -19,13 +17,13 @@ import ru.skypro.homework.service.AuthService;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManagerImpl manager;
+    private final UserDetailsServiceImpl manager;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
     @Override
     public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+        if (!userRepository.existsByLoginIgnoreCase(userName)) {
             return false;
         }
         UserDetails userDetails = manager.loadUserByUsername(userName);
@@ -36,17 +34,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean register(Register register) {
-        if (manager.userExists(register.getUsername())) {
+        if (userRepository.existsByLoginIgnoreCase(register.getUsername())) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
-
         UserEntity newUser = new UserEntity();
         newUser.setLogin(register.getUsername());
         newUser.setPassword(encoder.encode(register.getPassword()));
