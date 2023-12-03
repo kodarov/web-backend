@@ -92,10 +92,10 @@ public class UsersController {
         return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
 
-    //для примера
-    @GetMapping("/test")
+    //для примера, получение UserDetails через @AuthenticationPrincipal
+/*    @GetMapping("/test")
     public UserDetails getTest(@AuthenticationPrincipal UserDetails userDetails){
         return userDetails;
-    }
+    }*/
 
 }
