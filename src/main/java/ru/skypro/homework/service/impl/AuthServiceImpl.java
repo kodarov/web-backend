@@ -31,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean login(String userName,String password) {
+        log.debug("--- service started login");
             if (!userRepository.existsByLoginIgnoreCase(userName)) {
                 return false;
             }
@@ -49,9 +50,30 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean register(Register register) {
+        log.debug("--- service started register");
         if (userRepository.existsByLoginIgnoreCase(register.getUsername())) {
             return false;
         }
+
+        UserEntity newUser = createUser(register);
+
+        try {
+            userRepository.save(newUser);
+            log.debug("--- user registered: " + register.getUsername());
+            return true;
+        }catch (Exception e){
+            log.error("error during user registration: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Creates a user entity based on DTO registration data.
+     *
+     * @param register The registration details of the new user.
+     * @return A UserEntity object representing the new user.
+     */
+    private UserEntity createUser(Register register) {
         UserEntity newUser = new UserEntity();
         newUser.setLogin(register.getUsername());
         newUser.setPassword(encoder.encode(register.getPassword()));
@@ -60,9 +82,6 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPhone(register.getPhone());
         newUser.setRole(register.getRole());
         newUser.setAvatar(new Avatar());
-        userRepository.save(newUser);
-        log.debug("--- user registered: " + register.getUsername());
-
-        return true;
+        return newUser;
     }
 }

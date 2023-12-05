@@ -53,7 +53,7 @@ public class AdsController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteAd(@PathVariable Integer id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (adService.delete(auth,id)){
+        if (adService.deleteAd(auth,id)){
            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

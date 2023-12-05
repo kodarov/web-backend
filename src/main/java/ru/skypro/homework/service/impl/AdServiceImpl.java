@@ -12,6 +12,9 @@ import ru.skypro.homework.dto.AdsAll;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.AdImage;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.UnauthorizedUserException;
+import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.UserRepository;
@@ -21,6 +24,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing advertisements.
+ * @author KodarovSS
+ * @version 1.0
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -28,10 +36,21 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final AdMapper adMapper;
+
+    /**
+     * Add a new advertisement.
+     *
+     * @param auth      The authentication details.
+     * @param adCrOrUpd The DTO details of the new advertisement.
+     * @param image     The image file for the advertisement.
+     * @return AdDto representing the added advertisement.
+     * @throws IOException if an I/O error occurs.
+     */
     @Override
     public AdDto addAd(Authentication auth, AdCreateOrUpdate adCrOrUpd,MultipartFile image) throws IOException {
-        log.info("сервис addAd");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+        log.debug("---started addAd");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(()->new UserNotFoundException("User not found with username: " + auth.getName()));
         Ad ad = adMapper.inDtoUpdate(adCrOrUpd);
         AdImage adImage = new AdImage();
         adImage.setData(image.getBytes());
@@ -42,27 +61,59 @@ public class AdServiceImpl implements AdService {
         return adMapper.outDtoAd(ad);
     }
 
+    /**
+     * Get information about a specific advertisement.
+     *
+     * @param adId The ID of the advertisement.
+     * @return AdInfo representing the information about the advertisement.
+     * @throws EntityNotFoundException if the advertisement is not found.
+     */
     @Override
     public AdInfo getAd(int adId) {
-        Ad ad = adRepository.findById(adId).orElseThrow();
+        log.debug("--- service started getAd");
+        Ad ad = adRepository.findById(adId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
         return adMapper.outDtoInfo(ad);
     }
-
+    /**
+     * Update an existing advertisement.
+     *
+     * @param auth      The authentication details.
+     * @param idAd      The ID of the advertisement to update.
+     * @param adCrOrUpd The DTO updated details of the advertisement.
+     * @return AdDto representing the updated advertisement.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws EntityNotFoundException if the advertisement is not found.
+     * @throws UnauthorizedUserException if the user is not authorized to update the ad.
+     */
     @Override
-    public AdDto updateAd(Authentication auth, int idAd, AdCreateOrUpdate adCrOrUpd) throws Exception {
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
-        Ad ad = adRepository.findById(idAd).orElseThrow();
+    public AdDto updateAd(Authentication auth, int idAd, AdCreateOrUpdate adCrOrUpd)
+            throws UserNotFoundException,EntityNotFoundException, UnauthorizedUserException {
+        log.debug("--- service started updateAd");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
+        Ad ad = adRepository.findById(idAd)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + idAd));
         if (userEntity.getId() == ad.getUserEntity().getId()) {
             Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd,ad);
             return adMapper.outDtoAd(updatedAd);
         } else {
-            throw new Exception(); //временно
+            throw new UnauthorizedUserException("User is not authorized to update this ad");
         }
     }
 
+    /**
+     * Delete an advertisement.
+     *
+     * @param auth The authentication details.
+     * @param idAd The ID of the advertisement to delete.
+     * @return True if the advertisement is deleted, false otherwise.
+     */
     @Override
-    public boolean delete(Authentication auth, int idAd) {
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+    public boolean deleteAd(Authentication auth, int idAd) throws UserNotFoundException {
+        log.debug("--- service started deleteAd");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
         if (adRepository.findById(idAd).isPresent()){
             adRepository.deleteById(idAd);
             return true;
@@ -70,8 +121,14 @@ public class AdServiceImpl implements AdService {
         return false;
     }
 
+    /**
+     * Get a list of all advertisements.
+     *
+     * @return AdsAll representing a list of all advertisements.
+     */
     @Override
     public AdsAll getAllAds() {
+        log.debug("--- service started getAllAds");
         List<Ad> ads = adRepository.findAll();
         List<AdDto> adDtoList = ads.stream()
                 .map(adMapper::outDtoAd)
@@ -79,26 +136,57 @@ public class AdServiceImpl implements AdService {
         return adMapper.outDtoAll(adDtoList);
     }
 
+    /**
+     * Get a list of advertisements for the authenticated user.
+     *
+     * @param auth The authentication details.
+     * @return AdsAll representing a list of advertisements for the authenticated user.
+     * @throws UserNotFoundException if the user is not found.
+     */
     @Override
-    public AdsAll getAllAdsAuth(Authentication auth) {
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+    public AdsAll getAllAdsAuth(Authentication auth) throws UserNotFoundException {
+        log.debug("--- service started getAllAdsAuth");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
         List<Ad> adList = adRepository.findAdByUserEntity(userEntity);
-        List<AdDto> adDtoList = adList.stream().map(adMapper::outDtoAd).collect(Collectors.toList()); // Переделать маппер adList To AdsAll
+        List<AdDto> adDtoList = adList.stream().map(adMapper::outDtoAd).collect(Collectors.toList());
         return  adMapper.outDtoAll(adDtoList);
     }
 
+    /**
+     * Update the image of an advertisement.
+     *
+     * @param auth  The authentication details.
+     * @param adId    The ID of the advertisement.
+     * @param image The new image for the advertisement.
+     * @return Byte array representing the updated image.
+     * @throws IOException if an I/O error occurs.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws EntityNotFoundException if the advertisement is not found.
+     */
     @Override
-    public byte[] updateImageAd(Authentication auth, int id, MultipartFile image) throws IOException {
-        log.debug("--- service started updateImageAd");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
-       Ad ad = adRepository.findAdByUserEntity(userEntity).get(id);
+    public byte[] updateImageAd(Authentication auth, int adId, MultipartFile image)
+            throws IOException,UserNotFoundException,EntityNotFoundException {
+        log.debug("--- service started updateImageAd ");
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
+       Ad ad = adRepository.findAdByUserEntity(userEntity).get(adId);
        ad.setAdImage(ad.getAdImage());
        adRepository.save(ad);
         return ad.getAdImage().getData();
     }
 
+    /**
+     * Get the image of an advertisement.
+     *
+     * @param adId The ID of the advertisement.
+     * @return Byte array representing the image of the advertisement.
+     */
     @Override
-    public byte[] getImageAd(int idAd) {
-        return adRepository.findById(idAd).orElseThrow().getAdImage().getData();
+    public byte[] getImageAd(int adId)throws EntityNotFoundException {
+        log.debug("--- service started getImageAd");
+        return adRepository.findById(adId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId))
+                .getAdImage().getData();
     }
 }
