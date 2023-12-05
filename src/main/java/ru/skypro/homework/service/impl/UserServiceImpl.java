@@ -15,6 +15,7 @@ import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
 import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.EntityNotFoundException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repositories.AvatarRepository;
@@ -24,7 +25,9 @@ import ru.skypro.homework.service.UserService;
 import java.io.IOException;
 
 /**
- * Service for processing user
+ * Service for processing user-related operations.
+ * @author KodarovSS
+ * @version 1.0
  */
 @Service
 @Slf4j
@@ -35,6 +38,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
 
+    /**
+     * Load user details by username.
+     *
+     * @param username The username to load user details.
+     * @return UserDetails of the specified user.
+     * @throws UsernameNotFoundException if the user is not found.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(username)
@@ -47,6 +57,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDetails;
     }
 
+    /**
+     * Get user information based on authentication details.
+     *
+     * @param auth The authentication details.
+     * @return UserInfo DTO object containing user information.
+     * @throws UserNotFoundException if the user is not found.
+     */
     @Override
     public UserInfo getUser(Authentication auth) {
         log.debug("--- started getUser");
@@ -55,6 +72,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.outDto(userEntity);
     }
 
+    /**
+     * Update user information.
+     *
+     * @param auth       The authentication details.
+     * @param userUpdate The DTO with updated user information.
+     * @return Updated UserUpdate DTO object.
+     * @throws UserNotFoundException if the user is not found.
+     */
     @Override
     public UserUpdate updateUser(Authentication auth, UserUpdate userUpdate) {
         log.debug("--- service started updateUser");
@@ -65,6 +90,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userUpdate;
     }
 
+    /**
+     * Update user password.
+     *
+     * @param auth     The authentication details.
+     * @param password The DTO with new and current passwords.
+     * @return True if the password is updated, false otherwise.
+     */
     @Override
     public boolean updatePassword(Authentication auth, NewPassword password) {
         log.debug("--- service started updatePassword");
@@ -78,6 +110,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return false;
     }
 
+    /**
+     * Update user avatar.
+     *
+     * @param auth  The authentication details.
+     * @param image The new avatar image data.
+     * @return True if the avatar is updated, false otherwise.
+     * @throws IOException if an I/O error occurs.
+     */
     @Override
     public boolean updateAvatar(Authentication auth, MultipartFile image) throws IOException {
         log.debug("--- service started updateAvatar");
@@ -94,10 +134,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+    /**
+     * Get avatar data by avatar ID.
+     *
+     * @param avatarId The ID of the avatar.
+     * @return Byte array representing avatar data.
+     * @throws EntityNotFoundException if the avatar is not found.
+     */
     @Override
     public byte[] getAvatar(int avatarId) {
         log.info("--- service started getAvatar");
-        Avatar avatar = avatarRepository.findById(avatarId).orElseThrow();
+        Avatar avatar = avatarRepository.findById(avatarId).orElseThrow(EntityNotFoundException::new);
         return avatar.getData();
     }
 }
