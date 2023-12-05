@@ -14,6 +14,7 @@ import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
 import ru.skypro.homework.service.UserService;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @Slf4j
@@ -26,7 +27,7 @@ public class UsersController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/set_password")
-    public ResponseEntity<String> setPassword(@RequestBody NewPassword pass) {
+    public ResponseEntity<String> setPassword(@Valid @RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         userService.updatePassword(auth,pass);
         return ResponseEntity.ok().build();
@@ -40,10 +41,9 @@ public class UsersController {
     }
 
     @PatchMapping("/me")
-    public UserUpdate updateUser(@RequestBody UserUpdate userUpdate) {
+    public UserUpdate updateUser(@Valid @RequestBody UserUpdate userUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        userService.updateUser(auth,userUpdate);
-        return new UserUpdate();
+        return userService.updateUser(auth,userUpdate);
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
