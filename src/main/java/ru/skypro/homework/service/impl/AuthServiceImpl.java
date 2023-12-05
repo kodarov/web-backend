@@ -12,7 +12,7 @@ import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
 /**
- * Authentication service
+ * Authentication service for handling login and registration.
  */
 @Service
 @Slf4j
@@ -22,6 +22,13 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
+    /**
+     * Attempt to log in a user with the provided credentials.
+     *
+     * @param userName The username of the user.
+     * @param password The password of the user.
+     * @return True if login is successful, false otherwise.
+     */
     @Override
     public boolean login(String userName,String password) {
             if (!userRepository.existsByLoginIgnoreCase(userName)) {
@@ -34,7 +41,12 @@ public class AuthServiceImpl implements AuthService {
             }
             return false;
     }
-
+    /**
+     * Register a new user with the provided registration details.
+     *
+     * @param register The registration details of the new user.
+     * @return True if registration is successful, false if the username already exists.
+     */
     @Override
     public boolean register(Register register) {
         if (userRepository.existsByLoginIgnoreCase(register.getUsername())) {

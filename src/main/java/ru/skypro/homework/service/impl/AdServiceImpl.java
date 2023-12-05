@@ -89,9 +89,10 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public byte[] updateImageAd(Authentication auth, int id, MultipartFile image) throws IOException {
+        log.debug("--- service started updateImageAd");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
        Ad ad = adRepository.findAdByUserEntity(userEntity).get(id);
-       ad.getAdImage().setData(image.getBytes());
+       ad.setAdImage(ad.getAdImage());
        adRepository.save(ad);
         return ad.getAdImage().getData();
     }
