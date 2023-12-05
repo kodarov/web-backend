@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return true;
         }
         catch (IOException e){
+            log.error("Error updating avatar: " + e.getMessage());
             return false;
         }
     }

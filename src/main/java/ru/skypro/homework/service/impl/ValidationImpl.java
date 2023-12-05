@@ -2,9 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
@@ -13,12 +11,14 @@ import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.service.Validation;
 
-import java.security.Principal;
-
 /**
- * Сервис проверки прав на редактирование
- * коммента и объявления
- * @author Salavat Kodarov
+ * Service for checking permissions to edit comments and advertisements.
+ *
+ * <p>This service provides methods to validate whether a user has the right
+ * to edit a comment or an advertisement.</p>
+ *
+ * @author KodarovSS
+ * @version 1.0
  */
 
 @Service
@@ -28,6 +28,13 @@ public class ValidationImpl implements Validation {
     private final CommentRepository commentRepository;
     private final AdRepository adRepository;
 
+    /**
+     * Check user's permissions to edit a comment.
+     *
+     * @param auth      Authentication details.
+     * @param commentId Comment ID.
+     * @return True if the user has editing rights, false otherwise.
+     */
     @Override
     public boolean validateComment(Authentication auth, int commentId) {
         if (!commentRepository.existsById(commentId)){
@@ -35,11 +42,16 @@ public class ValidationImpl implements Validation {
         }
             Comment comment = commentRepository.findById(commentId).orElseThrow();
             UserEntity userEntity = comment.getUserEntity();
-            return userEntity.getLogin().equals(auth.getName())
-                    || auth.getAuthorities().stream()
-                    .anyMatch(e->e.getAuthority().equals("ROLE_ADMIN"));
+            return isUserAllowedToEdit(auth, userEntity);
     }
 
+    /**
+     * Check user's permissions to edit an advertisement.
+     *
+     * @param auth Authentication details.
+     * @param adId Advertisement ID.
+     * @return True if the user has editing rights, false otherwise.
+     */
     @Override
     public boolean validateAd(Authentication auth,int adId) {
         if (!adRepository.existsById(adId)){
@@ -47,8 +59,19 @@ public class ValidationImpl implements Validation {
         }
         Ad ad = adRepository.findById(adId).orElseThrow();
         UserEntity userEntity = ad.getUserEntity();
+        return isUserAllowedToEdit(auth, userEntity);
+    }
+
+    /**
+     * Check whether the user is allowed to edit based on their role and ownership.
+     *
+     * @param auth      Authentication details.
+     * @param userEntity UserEntity representing the owner of the entity.
+     * @return True if the user has editing rights, false otherwise.
+     */
+    private boolean isUserAllowedToEdit(Authentication auth, UserEntity userEntity) {
         return userEntity.getLogin().equals(auth.getName())
                 || auth.getAuthorities().stream()
-                .anyMatch(e->e.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

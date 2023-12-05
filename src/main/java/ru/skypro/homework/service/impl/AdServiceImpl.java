@@ -112,8 +112,6 @@ public class AdServiceImpl implements AdService {
     @Override
     public boolean deleteAd(Authentication auth, int idAd) throws UserNotFoundException {
         log.debug("--- service started deleteAd");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
         if (adRepository.findById(idAd).isPresent()){
             adRepository.deleteById(idAd);
             return true;
