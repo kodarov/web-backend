@@ -5,28 +5,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+/**
+ * Authentication service
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UserDetailsServiceImpl detailsService;
+    private final UserServiceImpl detailsService;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
     @Override
     public boolean login(String userName,String password) {
             if (!userRepository.existsByLoginIgnoreCase(userName)) {
-                log.debug("--- not found user login: " + userName);
                 return false;
             }
             UserDetails userDetails = detailsService.loadUserByUsername(userName);
@@ -34,7 +32,6 @@ public class AuthServiceImpl implements AuthService {
                 log.debug("--- user login: " + userName);
                 return true;
             }
-            log.debug("--- password incorrect, login: " + userName);
             return false;
     }
 
@@ -52,6 +49,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setRole(register.getRole());
         newUser.setAvatar(new Avatar());
         userRepository.save(newUser);
+        log.debug("--- user registered: " + register.getUsername());
 
         return true;
     }
