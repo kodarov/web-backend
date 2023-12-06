@@ -70,6 +70,8 @@ public class ValidationImpl implements Validation {
      * @return True if the user has editing rights, false otherwise.
      */
     private boolean isUserAllowedToEdit(Authentication auth, UserEntity userEntity) {
+        log.debug("Auth username: {}", auth.getName());
+        log.debug("UserEntity username: {}", userEntity.getLogin());
         return userEntity.getLogin().equals(auth.getName())
                 || auth.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));

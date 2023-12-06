@@ -4,6 +4,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+/**
+ * Entity representing user's avatar.
+ */
 @Entity(name = "avatars")
 @Data
 public class Avatar {

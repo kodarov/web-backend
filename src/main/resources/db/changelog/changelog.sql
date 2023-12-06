@@ -3,7 +3,7 @@
 --changeset 1 kodarov_s: roles
 CREATE TABLE roles
 (
-    role VARCHAR(50) PRIMARY KEY
+    role VARCHAR(50) NOT NULL PRIMARY KEY
 );
 INSERT INTO roles (role)
 VALUES ('USER'),
@@ -44,7 +44,6 @@ CREATE TABLE ads
     description TEXT,
     user_id     SERIAL REFERENCES users (id),
     ad_image_id SERIAL REFERENCES ad_image (id)
-    --ON DELETE CASCADE
 );
 --changeset 6 kodarov_s: comments
 CREATE TABLE comments

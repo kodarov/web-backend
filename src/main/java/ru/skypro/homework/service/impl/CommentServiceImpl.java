@@ -11,12 +11,14 @@ import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.UnauthorizedUserException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.Validation;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class CommentServiceImpl implements CommentService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
+    private final Validation validation;
 
     /**
      * Add a new comment to an advertisement.
@@ -79,22 +82,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(Authentication auth, int adId, int commentId, CommentCreateOrUpdate comCreOrUpd) {
         log.debug("--- service started updateComment");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                .orElseThrow(()->new UserNotFoundException("User not found: " + auth.getName()));
-
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(()-> new EntityNotFoundException("Advertisement not found with ID: " + adId));
 
         Comment currentComment = commentRepository.findById(commentId)
                 .orElseThrow(()->new EntityNotFoundException("Comment not found with ID: " + commentId));
 
-        if(userEntity.equals(currentComment.getUserEntity()))
+        if(validation.validateComment(auth,commentId))
         {
-            Comment newComment = commentMapper.inDto(userEntity,ad,comCreOrUpd);
+            Comment newComment = commentMapper.inDto(currentComment.getUserEntity(),ad,comCreOrUpd);
             newComment.setId(currentComment.getId());
             return commentMapper.outDto(commentRepository.save(newComment));
+        } else {
+            throw new UnauthorizedUserException("User is not authorized to update this ad");
         }
-        return  null;
     }
 
     /**
@@ -114,7 +115,7 @@ public class CommentServiceImpl implements CommentService {
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(()-> new EntityNotFoundException("Advertisement not found with ID: " + adId));
 
-        if(comment.getAd().equals(ad)){
+        if(comment.getAd().equals(ad) && validation.validateComment(auth,commentId)){
            commentRepository.deleteById(commentId);
            return true;
         }

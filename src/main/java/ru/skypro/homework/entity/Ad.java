@@ -6,8 +6,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * Сущность объявления
- * @Ad
+ * Entity representing an advertisement.
  */
 @Entity(name = "ads")
 @Data

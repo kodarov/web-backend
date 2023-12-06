@@ -19,6 +19,7 @@ import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.Validation;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +37,7 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final AdMapper adMapper;
+    private final Validation validation;
 
     /**
      * Add a new advertisement.
@@ -79,7 +81,7 @@ public class AdServiceImpl implements AdService {
      * Update an existing advertisement.
      *
      * @param auth      The authentication details.
-     * @param idAd      The ID of the advertisement to update.
+     * @param adId      The ID of the advertisement to update.
      * @param adCrOrUpd The DTO updated details of the advertisement.
      * @return AdDto representing the updated advertisement.
      * @throws UserNotFoundException if the user is not found.
@@ -87,14 +89,12 @@ public class AdServiceImpl implements AdService {
      * @throws UnauthorizedUserException if the user is not authorized to update the ad.
      */
     @Override
-    public AdDto updateAd(Authentication auth, int idAd, AdCreateOrUpdate adCrOrUpd)
+    public AdDto updateAd(Authentication auth, int adId, AdCreateOrUpdate adCrOrUpd)
             throws UserNotFoundException,EntityNotFoundException, UnauthorizedUserException {
         log.debug("--- service started updateAd");
-        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
-        Ad ad = adRepository.findById(idAd)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + idAd));
-        if (userEntity.getId() == ad.getUserEntity().getId()) {
+        Ad ad = adRepository.findById(adId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
+        if (validation.validateAd(auth,adId)) {
             Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd,ad);
             return adMapper.outDtoAd(updatedAd);
         } else {

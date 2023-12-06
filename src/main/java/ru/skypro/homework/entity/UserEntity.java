@@ -6,8 +6,7 @@ import ru.skypro.homework.dto.Role;
 import javax.persistence.*;
 
 /**
- * Сущность юзера
- * @UsersEntity
+ * Entity representing a user.
  */
 @Entity(name = "users")
 @Data
