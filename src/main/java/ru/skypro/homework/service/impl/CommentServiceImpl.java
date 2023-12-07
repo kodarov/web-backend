@@ -10,6 +10,7 @@ import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.CommentNotFoundException;
 import ru.skypro.homework.exception.EntityNotFoundException;
 import ru.skypro.homework.exception.UnauthorizedUserException;
 import ru.skypro.homework.exception.UserNotFoundException;
@@ -110,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
     public boolean deleteComment(Authentication auth, int adId, int commentId) {
         log.debug("--- service started deleteComment");
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(()->new EntityNotFoundException("Comment not found with ID: " + commentId));
+                .orElseThrow(()->new CommentNotFoundException("Comment not found with ID: " + commentId));
 
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(()-> new EntityNotFoundException("Advertisement not found with ID: " + adId));

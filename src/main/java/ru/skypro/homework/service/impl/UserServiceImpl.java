@@ -15,7 +15,9 @@ import ru.skypro.homework.dto.UserInfo;
 import ru.skypro.homework.dto.UserUpdate;
 import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.AvatarNotFoundException;
 import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.InvalidImageException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repositories.AvatarRepository;
@@ -26,6 +28,7 @@ import java.io.IOException;
 
 /**
  * Service for processing user-related operations.
+ *
  * @author KodarovSS
  * @version 1.0
  */
@@ -67,8 +70,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserInfo getUser(Authentication auth) {
         log.debug("--- started getUser");
-            UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                    .orElseThrow(() -> new UserNotFoundException("User not found "+ auth.getName()));
+        UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found " + auth.getName()));
         return userMapper.outDto(userEntity);
     }
 
@@ -84,8 +87,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserUpdate updateUser(Authentication auth, UserUpdate userUpdate) {
         log.debug("--- service started updateUser");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                .orElseThrow(() -> new UserNotFoundException("User not found "+ auth.getName()));
-        UserEntity updatedUser = userMapper.inDto(userUpdate,userEntity);
+                .orElseThrow(() -> new UserNotFoundException("User not found " + auth.getName()));
+        UserEntity updatedUser = userMapper.inDto(userUpdate, userEntity);
         userRepository.save(updatedUser);
         return userUpdate;
     }
@@ -102,7 +105,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.debug("--- service started updatePassword");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
 
-        if (encoder.matches(password.getCurrentPassword(), userEntity.getPassword())){
+        if (encoder.matches(password.getCurrentPassword(), userEntity.getPassword())) {
             userEntity.setPassword(encoder.encode(password.getNewPassword()));
             userRepository.save(userEntity);
             return true;
@@ -122,16 +125,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public boolean updateAvatar(Authentication auth, MultipartFile image) throws IOException {
         log.debug("--- service started updateAvatar");
         try {
-            UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName()).orElseThrow();
+            UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
+                    .orElseThrow(() -> new UserNotFoundException("User not found" + auth.getName()));
+            if (!image.getContentType().startsWith("image/")) {
+                throw new InvalidImageException();
+            }
+
             Avatar avatar = userEntity.getAvatar();
             avatar.setData(image.getBytes());
             userEntity.setAvatar(avatar);
             userRepository.save(userEntity);
             return true;
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             log.error("Error updating avatar: " + e.getMessage());
-            return false;
+            throw new AvatarNotFoundException();
         }
     }
 
@@ -145,7 +152,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public byte[] getAvatar(int avatarId) {
         log.info("--- service started getAvatar");
-        Avatar avatar = avatarRepository.findById(avatarId).orElseThrow(EntityNotFoundException::new);
+        Avatar avatar = avatarRepository.findById(avatarId)
+                .orElseThrow(() -> new AvatarNotFoundException());
         return avatar.getData();
     }
 }

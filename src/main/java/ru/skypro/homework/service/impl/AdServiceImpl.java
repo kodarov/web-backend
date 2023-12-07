@@ -12,6 +12,7 @@ import ru.skypro.homework.dto.AdsAll;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.AdImage;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.exception.EntityNotFoundException;
 import ru.skypro.homework.exception.UnauthorizedUserException;
 import ru.skypro.homework.exception.UserNotFoundException;
@@ -184,7 +185,7 @@ public class AdServiceImpl implements AdService {
     public byte[] getImageAd(int adId)throws EntityNotFoundException {
         log.debug("--- service started getImageAd");
         return adRepository.findById(adId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId))
+                .orElseThrow(() -> new AdNotFoundException("Advertisement not found with ID: " + adId))
                 .getAdImage().getData();
     }
 }

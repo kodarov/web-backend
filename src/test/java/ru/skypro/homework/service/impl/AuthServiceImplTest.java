@@ -1,56 +1,84 @@
 package ru.skypro.homework.service.impl;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.repositories.UserRepository;
 
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
-@Import(UserRepository.class)
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
-
-    @Container
-    private static final PostgreSQLContainer<?> postgreSQLContainer =
-            new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName("ads")
-            .withUsername("admin")
-            .withPassword("admin");
-    @Autowired
+    @Mock
+    private UserServiceImpl detailsService;
+    @Mock
+    private PasswordEncoder encoder;
+    @Mock
     private UserRepository userRepository;
-    @BeforeAll
-    public static void setUp() {
-        postgreSQLContainer.start();
-    }
-    @AfterAll
-    public static void tearDown() {
-        postgreSQLContainer.stop();
-    }
+    @InjectMocks
+    private AuthServiceImpl authService;
 
-    @DynamicPropertySource
-    static void setDynamicProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.driverClassName",postgreSQLContainer::getDriverClassName);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto=",()->"validate");
-        //registry.add("spring.liquibase.change-log",()->"classpath:/db/changelog/db.changelog-master.yaml");
-    }
     @Test
-    void login() {
+    void testLoginSuccess() {
+        String userName = "TestUser";
+        String password = "TestPassword";
+        when(userRepository.existsByLoginIgnoreCase(userName)).thenReturn(true);
+
+        UserDetails userDetails = mock(UserDetails.class);
+        when(detailsService.loadUserByUsername(userName)).thenReturn(userDetails);
+        when(encoder.matches(password, userDetails.getPassword())).thenReturn(true);
+
+        assertTrue(authService.login(userName, password));
+
+        verify(userRepository, times(1)).existsByLoginIgnoreCase(userName);
+        verify(detailsService, times(1)).loadUserByUsername(userName);
+        verify(encoder, times(1)).matches(password, userDetails.getPassword());
     }
 
     @Test
-    void register() {
+    void testLoginFailure() {
+        String userName = "TestUser";
+        String password = "TestPassword";
+        when(userRepository.existsByLoginIgnoreCase(userName)).thenReturn(false);
+
+        assertFalse(authService.login(userName, password));
+
+        verify(userRepository, times(1)).existsByLoginIgnoreCase(userName);
+        verify(detailsService, never()).loadUserByUsername(anyString());
+        verify(encoder, never()).matches(anyString(), anyString());
+    }
+
+    @Test
+    void testRegisterSuccess() {
+        Register register = new Register();
+        register.setUsername("TestNewUser");
+
+        when(userRepository.existsByLoginIgnoreCase(register.getUsername())).thenReturn(false);
+
+        assertTrue(authService.register(register));
+
+        verify(userRepository, times(1)).existsByLoginIgnoreCase(register.getUsername());
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+    }
+
+    @Test
+    void testRegisterFailure() {
+        Register register = new Register();
+        register.setUsername("TestUser");
+
+        when(userRepository.existsByLoginIgnoreCase(register.getUsername())).thenReturn(true);
+
+        assertFalse(authService.register(register));
+
+        verify(userRepository, times(1)).existsByLoginIgnoreCase(register.getUsername());
+        verify(userRepository, never()).save(any(UserEntity.class));
     }
 }

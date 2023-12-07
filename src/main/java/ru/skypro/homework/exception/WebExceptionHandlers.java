@@ -66,4 +66,9 @@ public class WebExceptionHandlers {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(AdNotFoundException.class)
+    public ResponseEntity<String> handleAdNotFoundException(AdNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
 }
