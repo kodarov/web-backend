@@ -97,6 +97,7 @@ public class AdServiceImpl implements AdService {
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
         if (validation.validateAd(auth,adId)) {
             Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd,ad);
+            adRepository.save(updatedAd);
             return adMapper.outDtoAd(updatedAd);
         } else {
             throw new UnauthorizedUserException("User is not authorized to update this ad");
