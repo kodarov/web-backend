@@ -9,6 +9,6 @@ public class UserInfo {
     private String firstName;
     private String lastName;
     private String phone;
-    private Role role;  //user или admin
-    private String image; //ссылка на аватар пользователя
+    private Role role;
+    private String image;
 }

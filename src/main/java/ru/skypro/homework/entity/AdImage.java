@@ -4,6 +4,10 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+/**
+ * Entity representing an image for an advertisement.
+ */
+
 @Entity
 @Data
 public class AdImage {

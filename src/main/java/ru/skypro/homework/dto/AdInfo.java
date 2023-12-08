@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AdInfo {
-    private int pk; // id объявления
+    private int pk;
     private String authorFirstName;
     private String authorLastName;
     private String description;

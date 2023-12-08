@@ -21,7 +21,12 @@ public class UserMapper {
     public UserEntity inDto(UserUpdate userUpdate, UserEntity user){
         user.setFirstName(userUpdate.getFirstName());
         user.setLastName(userUpdate.getLastName());
-        user.setPhone(userUpdate.getPhone());
+        String formattedPhoneNumber = formatPhoneNumber(userUpdate.getPhone());
+        user.setPhone(formattedPhoneNumber);
         return user;
     }
+        public static String formatPhoneNumber(String phoneNumber) {
+            String formattedPhoneNumber = phoneNumber.replaceAll("\\D", "");
+            return "+" + formattedPhoneNumber;
+        }
 }

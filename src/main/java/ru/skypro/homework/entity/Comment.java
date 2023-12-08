@@ -6,8 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Сущность комментарий
- * @Comment
+ * Entity representing a comment.
  */
 @Entity(name = "comments")
 @Data
