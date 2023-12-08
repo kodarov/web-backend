@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,6 @@ import java.io.IOException;
 public class UsersController {
     private final UserService userService;
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@Valid @RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -33,7 +31,6 @@ public class UsersController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public UserInfo getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
