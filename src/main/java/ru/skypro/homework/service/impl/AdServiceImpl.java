@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 /**
  * Service for managing advertisements.
+ *
  * @author KodarovSS
  * @version 1.0
  */
@@ -50,10 +51,10 @@ public class AdServiceImpl implements AdService {
      * @throws IOException if an I/O error occurs.
      */
     @Override
-    public AdDto addAd(Authentication auth, AdCreateOrUpdate adCrOrUpd,MultipartFile image) throws IOException {
+    public AdDto addAd(Authentication auth, AdCreateOrUpdate adCrOrUpd, MultipartFile image) throws IOException {
         log.debug("---started addAd");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
-                .orElseThrow(()->new UserNotFoundException("User not found with username: " + auth.getName()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
         Ad ad = adMapper.inDtoUpdate(adCrOrUpd);
         AdImage adImage = new AdImage();
         adImage.setData(image.getBytes());
@@ -78,6 +79,7 @@ public class AdServiceImpl implements AdService {
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
         return adMapper.outDtoInfo(ad);
     }
+
     /**
      * Update an existing advertisement.
      *
@@ -85,18 +87,18 @@ public class AdServiceImpl implements AdService {
      * @param adId      The ID of the advertisement to update.
      * @param adCrOrUpd The DTO updated details of the advertisement.
      * @return AdDto representing the updated advertisement.
-     * @throws UserNotFoundException if the user is not found.
-     * @throws EntityNotFoundException if the advertisement is not found.
+     * @throws UserNotFoundException     if the user is not found.
+     * @throws EntityNotFoundException   if the advertisement is not found.
      * @throws UnauthorizedUserException if the user is not authorized to update the ad.
      */
     @Override
     public AdDto updateAd(Authentication auth, int adId, AdCreateOrUpdate adCrOrUpd)
-            throws UserNotFoundException,EntityNotFoundException, UnauthorizedUserException {
+            throws UserNotFoundException, EntityNotFoundException, UnauthorizedUserException {
         log.debug("--- service started updateAd");
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
-        if (validation.validateAd(auth,adId)) {
-            Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd,ad);
+        if (validation.validateAd(auth, adId)) {
+            Ad updatedAd = adMapper.inDtoUpdate(adCrOrUpd, ad);
             adRepository.save(updatedAd);
             return adMapper.outDtoAd(updatedAd);
         } else {
@@ -114,7 +116,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public boolean deleteAd(Authentication auth, int idAd) throws UserNotFoundException {
         log.debug("--- service started deleteAd");
-        if (adRepository.findById(idAd).isPresent()){
+        if (adRepository.findById(idAd).isPresent()) {
             adRepository.deleteById(idAd);
             return true;
         }
@@ -150,29 +152,32 @@ public class AdServiceImpl implements AdService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
         List<Ad> adList = adRepository.findAdByUserEntity(userEntity);
         List<AdDto> adDtoList = adList.stream().map(adMapper::outDtoAd).collect(Collectors.toList());
-        return  adMapper.outDtoAll(adDtoList);
+        return adMapper.outDtoAll(adDtoList);
     }
 
     /**
      * Update the image of an advertisement.
      *
      * @param auth  The authentication details.
-     * @param adId    The ID of the advertisement.
+     * @param adId  The ID of the advertisement.
      * @param image The new image for the advertisement.
      * @return Byte array representing the updated image.
-     * @throws IOException if an I/O error occurs.
-     * @throws UserNotFoundException if the user is not found.
+     * @throws IOException             if an I/O error occurs.
+     * @throws UserNotFoundException   if the user is not found.
      * @throws EntityNotFoundException if the advertisement is not found.
      */
     @Override
     public byte[] updateImageAd(Authentication auth, int adId, MultipartFile image)
-            throws IOException,UserNotFoundException,EntityNotFoundException {
+            throws IOException, UserNotFoundException, EntityNotFoundException {
         log.debug("--- service started updateImageAd ");
         UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + auth.getName()));
-       Ad ad = adRepository.findAdByUserEntity(userEntity).get(adId);
-       ad.setAdImage(ad.getAdImage());
-       adRepository.save(ad);
+
+        Ad ad = adRepository.findById(adId).orElseThrow(AdNotFoundException::new);
+        AdImage adImage = ad.getAdImage();
+        adImage.setData(image.getBytes());
+        ad.setAdImage(adImage);
+        adRepository.save(ad);
         return ad.getAdImage().getData();
     }
 
@@ -183,7 +188,7 @@ public class AdServiceImpl implements AdService {
      * @return Byte array representing the image of the advertisement.
      */
     @Override
-    public byte[] getImageAd(int adId)throws EntityNotFoundException {
+    public byte[] getImageAd(int adId) throws EntityNotFoundException {
         log.debug("--- service started getImageAd");
         return adRepository.findById(adId)
                 .orElseThrow(() -> new AdNotFoundException("Advertisement not found with ID: " + adId))
