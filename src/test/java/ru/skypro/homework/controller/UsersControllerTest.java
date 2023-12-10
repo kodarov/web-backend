@@ -38,8 +38,7 @@ class UsersControllerTest {
     private TestRestTemplate restTemplate;
     private String baseUrl;
     @Container
-    private static final PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>(DockerImageName.parse("postgres:16"));
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16"));
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -89,8 +88,7 @@ class UsersControllerTest {
         newPassword.setNewPassword("newpassword");
         newPassword.setCurrentPassword("password");
 
-        ResponseEntity<String> response = restTemplate
-                .withBasicAuth("Nokodarov@gmail.com", "NoNewPassword") //указываем неверный пароль
+        ResponseEntity<String> response = restTemplate.withBasicAuth("Nokodarov@gmail.com", "NoNewPassword") //указываем неверный пароль
                 .postForEntity(newUrl, newPassword, String.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED).isNotNull();
     }
@@ -113,39 +111,37 @@ class UsersControllerTest {
         userUpdate.setLastName("LastName");
         userUpdate.setPhone("+79616544111");
 
-        ResponseEntity<UserUpdate> response = restTemplate
-                .exchange(
-                        newUrl,
-                        HttpMethod.PATCH,
-                        new HttpEntity<>(userUpdate), UserUpdate.class
-                );
+        ResponseEntity<UserUpdate> response = restTemplate.exchange(newUrl, HttpMethod.PATCH, new HttpEntity<>(userUpdate), UserUpdate.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
         Assertions.assertThat(response.getBody()).isEqualTo(userUpdate).isNotNull();
     }
 
     @Test
-    public void testUploadAvatar() throws Exception {
+    void UploadAvatarTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/me/image");
         Resource imageResource = new ClassPathResource("/images/avatar.jpg");
-
+        long imageSizeIn = imageResource.getFile().length();
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new FileSystemResource(imageResource.getFile()));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                newUrl,
-                HttpMethod.PATCH,
-                request,
-                String.class
-        );
-
-        Assertions.assertThat(response.getBody()).isEqualTo(HttpStatus.OK).isNotNull();
+        ResponseEntity<String> response = restTemplate.exchange(newUrl, HttpMethod.PATCH, request, String.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
 
 
+        URI getAvatarUrl = new URI(baseUrl + "/avatars/1");
+        ResponseEntity<byte[]> responseGetAvatar = restTemplate.getForEntity(getAvatarUrl,byte[].class);
+        Assertions.assertThat(responseGetAvatar.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+        Assertions.assertThat(responseGetAvatar.getBody().length).isEqualTo(imageSizeIn);
     }
 
+    @Test
+    void getAvatarTestPositive() throws Exception{
+        URI newUrl = new URI(baseUrl + "/avatars/1");
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(newUrl,byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+    }
 }
