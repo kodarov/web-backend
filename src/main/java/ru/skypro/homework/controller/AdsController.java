@@ -70,6 +70,7 @@ public class AdsController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(adService.getAllAdsAuth(auth));
     }
+
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
