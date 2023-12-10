@@ -20,7 +20,6 @@ import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.dto.Role;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -54,7 +53,7 @@ class AuthControllerTest {
 
     //User SQL changeset
     @Test
-    void loginTestPositive() throws URISyntaxException {
+    void loginTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/login");
         Login login = new Login();
         login.setUsername("kodarov@gmail.com");

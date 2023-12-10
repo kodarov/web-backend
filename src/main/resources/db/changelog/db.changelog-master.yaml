@@ -1,5 +1,3 @@
 databaseChangeLog:
   - includeAll:
       path: db/changelog/changes
-  - include:
-      file: db/changelog/db.changelog-test.yaml

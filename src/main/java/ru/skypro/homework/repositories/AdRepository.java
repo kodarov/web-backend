@@ -6,7 +6,6 @@ import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.UserEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AdRepository extends JpaRepository<Ad,Integer> {
