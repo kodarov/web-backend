@@ -76,7 +76,7 @@ public class AdServiceImpl implements AdService {
     public AdInfo getAd(int adId) {
         log.debug("--- service started getAd");
         Ad ad = adRepository.findById(adId)
-                .orElseThrow(() -> new EntityNotFoundException("Advertisement not found with ID: " + adId));
+                .orElseThrow(AdNotFoundException::new);
         return adMapper.outDtoInfo(ad);
     }
 

@@ -36,8 +36,8 @@ public class AdsController {
 
     @GetMapping(value = "/{id}")
     public AdInfo getAd(@PathVariable Integer id) {
-        AdInfo adInfo = adService.getAd(id);
-        return adInfo;
+            AdInfo adInfo = adService.getAd(id);
+            return adInfo;
     }
 
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")

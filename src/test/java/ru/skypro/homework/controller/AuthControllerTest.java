@@ -22,7 +22,7 @@ import ru.skypro.homework.dto.Role;
 import java.net.URI;
 
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthControllerTest {
     @LocalServerPort
     private int port;
