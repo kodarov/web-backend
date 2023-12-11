@@ -8,9 +8,9 @@ import javax.validation.constraints.Size;
 @Data
 public class NewPassword {
     @NotBlank
-    @Size(min = 8, max = 16, message = "Длина текущего пароля должна быть от 8 до 16 символов")
+    @Size(min = 8, max = 16, message = "The current password must be between 8 and 16 characters long")
     private String currentPassword;
     @NotBlank
-    @Size(min = 8, max = 16, message = "Длина нового пароля должна быть от 8 до 16 символов")
+    @Size(min = 8, max = 16, message = "The length of the new password must be between 8 and 16 characters")
     private String newPassword;
 }

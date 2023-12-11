@@ -17,7 +17,6 @@ import ru.skypro.homework.entity.Avatar;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.exception.AvatarNotFoundException;
 import ru.skypro.homework.exception.EntityNotFoundException;
-import ru.skypro.homework.exception.InvalidImageException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repositories.AvatarRepository;
@@ -127,9 +126,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         try {
             UserEntity userEntity = userRepository.findUserEntityByLoginIgnoreCase(auth.getName())
                     .orElseThrow(() -> new UserNotFoundException("User not found" + auth.getName()));
-            if (!image.getContentType().startsWith("image/")) {
-                throw new InvalidImageException();
-            }
 
             Avatar avatar = userEntity.getAvatar();
             avatar.setData(image.getBytes());

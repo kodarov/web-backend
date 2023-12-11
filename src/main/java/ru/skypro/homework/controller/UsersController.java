@@ -2,6 +2,7 @@ package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,8 +28,11 @@ public class UsersController {
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@Valid @RequestBody NewPassword pass) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        userService.updatePassword(auth,pass);
-        return ResponseEntity.ok().build();
+        if (userService.updatePassword(auth, pass)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
     }
 
     @GetMapping("/me")
@@ -40,18 +44,18 @@ public class UsersController {
     @PatchMapping("/me")
     public UserUpdate updateUser(@Valid @RequestBody UserUpdate userUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userService.updateUser(auth,userUpdate);
+        return userService.updateUser(auth, userUpdate);
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        userService.updateAvatar(auth,image);
+        userService.updateAvatar(auth, image);
         return ResponseEntity.ok().build();
     }
-    
+
     @GetMapping("/avatars/{id}")
-    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId){
+    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId) {
         return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
 }

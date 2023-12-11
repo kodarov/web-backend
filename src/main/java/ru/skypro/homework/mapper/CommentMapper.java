@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class CommentMapper {
-    //Вспомогательный маппер из Comment в СommentDto
     public CommentDto outDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setAuthor(comment.getUserEntity().getId());
@@ -27,7 +26,6 @@ public class CommentMapper {
         return commentDto;
     }
 
-    //проходимся по листу Comment и маппим каждый
     public Comments outDtos(List<Comment> commentsList) {
         Comments commentsDto = new Comments();
         List<CommentDto> commentDtoList = commentsList.stream()
