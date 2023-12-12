@@ -57,7 +57,7 @@ class UsersControllerTest {
 
         NewPassword newPassword = new NewPassword();
         newPassword.setNewPassword("NewPassword");
-        newPassword.setCurrentPassword("password"); //без https дыра в безопасности
+        newPassword.setCurrentPassword("password");
 
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("testuser@gmail.com", "password")
@@ -71,7 +71,7 @@ class UsersControllerTest {
 
         NewPassword newPassword = new NewPassword();
         newPassword.setNewPassword("newpassword");
-        newPassword.setCurrentPassword("NagativePassword"); //указываем неверный пароль
+        newPassword.setCurrentPassword("NagativePassword");
 
         ResponseEntity<String> response = restTemplate.postForEntity(newUrl, newPassword, String.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN).isNotNull();
@@ -85,7 +85,7 @@ class UsersControllerTest {
         newPassword.setNewPassword("newpassword");
         newPassword.setCurrentPassword("password");
 
-        ResponseEntity<String> response = restTemplate.withBasicAuth("Nokodarov@gmail.com", "NoNewPassword") //указываем неверный пароль
+        ResponseEntity<String> response = restTemplate.withBasicAuth("Nokodarov@gmail.com", "NoNewPassword")
                 .postForEntity(newUrl, newPassword, String.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED).isNotNull();
     }
