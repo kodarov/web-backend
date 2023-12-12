@@ -22,8 +22,11 @@ import org.testcontainers.utility.DockerImageName;
 import ru.skypro.homework.dto.AdCreateOrUpdate;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.AdInfo;
+import ru.skypro.homework.dto.AdsAll;
 
 import java.net.URI;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,6 +54,7 @@ class AdsControllerTest {
         baseUrl = "http://localhost:" + port + "/ads";
         restTemplate = restTemplate.withBasicAuth("kodarov@gmail.com", "password");
     }
+
     @Test
     void addAdTestPositive() throws Exception {
         Resource imageResource = new ClassPathResource("/images/test-image.jpg");
@@ -65,7 +69,8 @@ class AdsControllerTest {
 
         AdDto adDto = new AdDto();
         adDto.setTitle(adCrOrUpd.getTitle());
-        adDto.setPrice(adCrOrUpd.getPrice());;
+        adDto.setPrice(adCrOrUpd.getPrice());
+        ;
         adDto.setAuthor(1);
         adDto.setPk(3);
         adDto.setImage("/ads/3/image");
@@ -80,32 +85,137 @@ class AdsControllerTest {
                 request,
                 AdDto.class);
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED).isNotNull();
-        Assertions.assertThat(response.getBody()).isEqualTo(adDto);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED).isNotNull();
+        assertThat(response.getBody()).isEqualTo(adDto);
     }
 
     @Test
-    void getAdTestPositive() throws Exception{
+    void getAdTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/1");
-        ResponseEntity<AdInfo> response = restTemplate.getForEntity(newUrl,AdInfo.class);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
-        Assertions.assertThat(response.getBody()).isInstanceOf(AdInfo.class);
+        ResponseEntity<AdInfo> response = restTemplate.getForEntity(newUrl, AdInfo.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(AdInfo.class);
     }
+
     @Test
-    void getAdTestNegativeNOT_FOUND() throws Exception{
+    void getAdTestNegativeNOT_FOUND() throws Exception {
         URI newUrl = new URI(baseUrl + "/100");
-        ResponseEntity<?> response = restTemplate.getForEntity(newUrl,String.class);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND).isNotNull();
+        ResponseEntity<?> response = restTemplate.getForEntity(newUrl, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND).isNotNull();
     }
+
     @Test
-    void updateAdTestPositive() throws Exception{
+    void updateAdTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/1");
+
         AdCreateOrUpdate adCrOrUpd = new AdCreateOrUpdate();
         adCrOrUpd.setTitle("Mercedes-Benz");
         adCrOrUpd.setPrice(1000000);
         adCrOrUpd.setDescription("Mercedes Benz is the best car for family and work.");
 
-        //ResponseEntity<AdDto> response = restTemplate.patchForObject(baseUrl+"ç",adCrOrUpd,AdDto.class,1);
+        AdDto adDto = new AdDto();
+        adDto.setTitle(adCrOrUpd.getTitle());
+        adDto.setPrice(adCrOrUpd.getPrice());
+        adDto.setPk(1);
+        adDto.setImage("/ads/1/image");
+        adDto.setAuthor(1);
+
+        ResponseEntity<?> response = restTemplate
+                .exchange(
+                        newUrl,
+                        HttpMethod.PATCH,
+                        new HttpEntity<>(adCrOrUpd),
+                        AdDto.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(adDto);
     }
 
+    @Test
+    void updateAdTestNegativeFORBIDDEN() throws Exception {
+        URI newUrl = new URI(baseUrl + "/2");
+
+        AdCreateOrUpdate adCrOrUpd = new AdCreateOrUpdate();
+        adCrOrUpd.setTitle("Mercedes-Benz");
+        adCrOrUpd.setPrice(1000000);
+        adCrOrUpd.setDescription("Mercedes Benz is the best car for family and work.");
+
+        AdDto adDto = new AdDto();
+        adDto.setTitle(adCrOrUpd.getTitle());
+        adDto.setPrice(adCrOrUpd.getPrice());
+        adDto.setPk(1);
+        adDto.setImage("/ads/1/image");
+        adDto.setAuthor(1);
+
+        ResponseEntity<?> response = restTemplate
+                .exchange(
+                        newUrl,
+                        HttpMethod.PATCH,
+                        new HttpEntity<>(adCrOrUpd),
+                        AdDto.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void deleteAdTestPositive() throws Exception {
+        URI newUrl = new URI(baseUrl + "/2");
+        ResponseEntity<?> response = restTemplate
+                .withBasicAuth("testuser@gmail.com", "password")
+                .exchange(
+                        newUrl,
+                        HttpMethod.DELETE,
+                        HttpEntity.EMPTY,
+                        String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void getAllAdsTestPositive() throws Exception {
+        ResponseEntity<AdsAll> response = restTemplate.getForEntity(baseUrl, AdsAll.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(AdsAll.class);
+    }
+
+    @Test
+    void getAdsMePositive() throws Exception {
+        URI newUrl = new URI(baseUrl + "/me");
+
+        ResponseEntity<AdsAll> response = restTemplate.getForEntity(newUrl, AdsAll.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(AdsAll.class);
+    }
+
+    @Test
+    void updateAdImagePositive() throws Exception {
+        URI newUrl = new URI(baseUrl + "/1/image");
+        Resource imageResource = new ClassPathResource("/images/test-image.jpg");
+        long imageSizeIn = imageResource.getFile().length();
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", new FileSystemResource(imageResource.getFile()));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                newUrl,
+                HttpMethod.PATCH,
+                request,
+                byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+
+        //get imageAd
+        URI getImageAdUrl = new URI(baseUrl + "/1/image");
+        ResponseEntity<byte[]> responseGetImageAd = restTemplate.getForEntity(getImageAdUrl, byte[].class);
+        Assertions.assertThat(responseGetImageAd.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+        Assertions.assertThat(responseGetImageAd.getBody().length).isEqualTo(imageSizeIn);
+    }
+
+    @Test
+    void getAdImageTestPositive() throws Exception {
+        URI newUrl = new URI(baseUrl + "/1/image");
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(newUrl, byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
+    }
 }

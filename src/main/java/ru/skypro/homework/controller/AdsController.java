@@ -2,6 +2,7 @@ package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,8 @@ public class AdsController {
 
     @GetMapping(value = "/{id}")
     public AdInfo getAd(@PathVariable Integer id) {
-            AdInfo adInfo = adService.getAd(id);
-            return adInfo;
+        AdInfo adInfo = adService.getAd(id);
+        return adInfo;
     }
 
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
@@ -75,9 +76,16 @@ public class AdsController {
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id, @RequestPart("image") MultipartFile image) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            return ResponseEntity.ok(adService.updateImageAd(auth, id, image));
+            byte[] imageData = adService.updateImageAd(auth, id, image);
+
+            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
