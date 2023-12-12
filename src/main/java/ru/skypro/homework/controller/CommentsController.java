@@ -23,12 +23,6 @@ public class CommentsController {
     private final CommentService commentService;
     private final Validation validation;
 
-    /**
-     * Добавление комментария к объявлению
-     *
-     * @param adId
-     * @return
-     */
     @PostMapping("/{adId}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
                                                  @RequestBody CommentCreateOrUpdate comment) {
@@ -37,12 +31,6 @@ public class CommentsController {
         return ResponseEntity.ok(commentDto);
     }
 
-    /**
-     * Получение комментариев объявления
-     *
-     * @param adId
-     * @return
-     */
     @GetMapping("/{adId}/comments")
     public Comments getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -57,14 +45,6 @@ public class CommentsController {
 
     }
 
-    /**
-     * Обновление комментария
-     *
-     * @param adId
-     * @param commentId
-     * @param comment
-     * @return
-     */
     @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,
@@ -74,13 +54,6 @@ public class CommentsController {
         return ResponseEntity.ok(commentService.updateComment(auth, adId, commentId, comment));
     }
 
-    /**
-     * Удаление комментария
-     *
-     * @param adId
-     * @param commentId
-     * @return
-     */
     @DeleteMapping("/{adId}/comments/{commentId}")
     @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
     public ResponseEntity<String> delComment(@PathVariable Integer adId,

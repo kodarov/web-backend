@@ -72,7 +72,7 @@ public class WebExceptionHandlers {
 
     @ExceptionHandler(AdNotFoundException.class)
     public ResponseEntity<String> handleAdNotFoundException(AdNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Advertisement not found");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

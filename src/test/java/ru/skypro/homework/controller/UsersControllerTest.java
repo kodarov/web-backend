@@ -1,6 +1,5 @@
 package ru.skypro.homework.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,8 @@ import ru.skypro.homework.dto.UserUpdate;
 
 import java.net.URI;
 
-@Slf4j
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UsersControllerTest {
     @LocalServerPort
     private int port;
@@ -53,7 +51,6 @@ class UsersControllerTest {
         baseUrl = "http://localhost:" + port + "/users";
         restTemplate = restTemplate.withBasicAuth("kodarov@gmail.com", "password");
     }
-
     @Test
     void setPasswordTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/set_password");
@@ -119,7 +116,7 @@ class UsersControllerTest {
     @Test
     void UploadAvatarTestPositive() throws Exception {
         URI newUrl = new URI(baseUrl + "/me/image");
-        Resource imageResource = new ClassPathResource("/images/avatar.jpg");
+        Resource imageResource = new ClassPathResource("/images/test-image.jpg");
         long imageSizeIn = imageResource.getFile().length();
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new FileSystemResource(imageResource.getFile()));
@@ -131,7 +128,7 @@ class UsersControllerTest {
         ResponseEntity<String> response = restTemplate.exchange(newUrl, HttpMethod.PATCH, request, String.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
 
-
+        //get avatar
         URI getAvatarUrl = new URI(baseUrl + "/avatars/1");
         ResponseEntity<byte[]> responseGetAvatar = restTemplate.getForEntity(getAvatarUrl,byte[].class);
         Assertions.assertThat(responseGetAvatar.getStatusCode()).isEqualTo(HttpStatus.OK).isNotNull();
