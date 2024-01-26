@@ -1,23 +1,24 @@
-# Платформа размещения объявлений по продаже вещей.
+# Advertisement Platform
 <div style="display: flex; align-items: center; justify-content: space-between;">
   <div style="width: 60%;">
-    <h3>Дипломный проект
-    <p>Автор: Кодаров Салават.</p></h3>
-<h4>Цель проекта - создать Backend для веб-сайта на котором пользователи могут размещать объявления о продаже своих вещей, просматривать объявления других пользователей, общаться с продавцами и покупателями через чат.
-Присутствует редактирование пользователя через личный кабинет.</h4>
+    <h3>
+    <p>Author: Salavat Kodarov</p></h3>
+<h4>Adv is a back-end for a website where users can post
+advertisements for selling their items, view ads from 
+other users, communicate with sellers and buyers through a chat. 
+User profile editing is also available.</h4>
   </div>
   <img src="banner.gif" alt="Лого проекта" width="400" hspace="20"/>
 </div>
 
 
 
-## Технологии и инструменты
+## Technologies and Tools
 
-Проект написан на языке Java 11 с использованием фреймворка Spring Boot/Web. Для хранения данных используется база данных
-PostgreSQL 16, для управления миграциями - Liquibase. 
-Для контейнеризации приложения используется Docker-compose. Проект написан по готовой [cпецификации](https://example.com/path/to/your/specification.yaml)
-фронтенда 
-[avito на react](https://github.com/BizinMitya/front-react-avito).
+The project is written in Java 11 using the Spring Boot/Web framework. PostgreSQL 16 is used for data storage, and Liquibase is used for migration management. 
+Docker-compose is used for containerizing the application. 
+The project is based on a ready-made [front-end specification](https://example.com/path/to/your/specification.yaml) for the frontend
+[ADV на react](https://github.com/BizinMitya/front-react-avito).
 
 ![Java](https://img.shields.io/badge/java-11-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring](https://img.shields.io/badge/spring--boot-2.7.15-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
@@ -26,92 +27,91 @@ PostgreSQL 16, для управления миграциями - Liquibase.
 ![Liquebase](https://img.shields.io/badge/liquibase-%230db7ed.svg?style=for-the-badge&logo=liquibase&logoColor=white)
 ![Hibernate](https://img.shields.io/badge/hibernate-%236DB33F.svg?style=for-the-badge&logo=hibernate&logoColor=white)
 
-## Функциональность
+## Functionality
 
 Проект реализует следующие функции:
 
-- Авторизация и аутентификация пользователей с помощью Basic authentication.
-- Распределение ролей между пользователями: пользователь и администратор.
-- CRUD-операции для объявлений и комментариев: администратор может удалять или редактировать все объявления и комментарии, а пользователи — только свои.
-- Возможность для пользователей оставлять комментарии под каждым объявлением.
-- Показ и сохранение картинок объявлений, а также аватарок пользователей.
-- Просмотр детальной информации об объявлении, включая фотографии, описание, контакты продавца и комментарии пользователей
-- Просмотр и редактирование своего профиля, включая имя, фамилию, телефон, аватар и пароль.
+- Authorization and user authentication using Basic authentication.
+- Role distribution among users: user and administrator.
+- CRUD operations for ads and comments: the administrator can delete or edit all ads and comments, while users can only modify their own.
+- Ability for users to leave comments under each ad.
+- Display and storage of ad images, as well as user avatars.
+- Viewing detailed information about an ad, including photos, description, seller's contacts, and user comments.
+- Viewing and editing one's profile, including name, surname, phone, avatar, and password.
 
-## Запуск проекта
+## Project Launch
+To launch the project, you will need the following programs:
 
-Для запуска проекта вам понадобятся следующие программы:
+- Java 11 or higher
+- Maven 3.6.3 or higher
+- Docker 20.10.8 or higher
+- PostgreSQL 16 or higher
+- 
+Follow these steps to run the project:
 
-- Java 11 или выше
-- Maven 3.6.3 или выше
-- Docker 20.10.8 или выше
-- PostgreSQL 16 или выше
-
-Следуйте этим шагам, чтобы запустить проект:
-
-1. Клонируйте репозиторий проекта с GitHub:
+1. Clone the project repository from GitHub:
 
 ```bash
 git clone https://github.com/kodarov/web-backend.git
 ```
 
-2. Перейдите в папку проекта:
+2. Navigate to the project folder:
 
 ```bash
 cd web-backend
 ```
 
-3. Соберите проект с помощью Maven:
+3. Build the project using Maven:
 
 ```bash
 mvn clean package
 ```
 
-4. Запустите Docker:
+4. Start Docker:
 
 ```bash
 docker-compose up
 ```
 
-5. После того, как Docker запустит все необходимые контейнеры, вы можете обратиться к приложению по адресу:
+5. Once Docker starts all necessary containers, you can access the application at:
 
 ```bash
 http://localhost:8080
 ```
 
-6. Для остановки и удаления контейнеров используйте команду:
+6. To stop and remove the containers, use the command:
 
 ```bash
 docker-compose down
 ```
 
-## Документация API
-Спецификации можно посмотреть на 
+## API Documentation
+Specifications can be viewed at
 ```bash
 https://editor.swagger.io/ 
 ```
-скопировав код из
+by copying the code from openapi.yaml
 [openapi.yaml](https://github.com/BizinMitya/front-react-avito/blob/main/openapi.yaml)
 
-Вы также можете просмотреть и протестировать API по адресу:
+You can also view and test the API at:
 
 ```bash
 http://localhost:8080/swagger-ui.html
 ```
 
 
-## Применение Testсontainers <img src="https://avatars.githubusercontent.com/u/13393021?s=200&v=4" alt="Testcontainers" width="50" height="50">
+## Using Testcontainers <img src="https://avatars.githubusercontent.com/u/13393021?s=200&v=4" alt="Testcontainers" width="50" height="50">
 
-В этом проекте <b>Testcontainers</b> используется для создания контейнеров PostgreSQL в процессе интеграционного тестирования. Это обеспечивает консистентность и надежность тестов, поскольку каждый тест контроллера работает со своим собственным экземпляром базы данных.
+n this project, <b>Testcontainers</b> is used to create PostgreSQL containers during integration testing. This ensures consistency and reliability of tests, as each controller test operates with its own instance of the database.
 
 
 
-## Контакты
+## Contacts
 
-Если у вас есть вопросы или предложения по проекту, вы можете связаться со мной по электронной почте:
+If you have any questions or suggestions about the project, you can contact me by email:
 
 ```bash
 kodarov@gmail.com
 ```
 
-Надеюсь, вам понравится мой проект! 😊
+Hope you enjoy my project! 😊
